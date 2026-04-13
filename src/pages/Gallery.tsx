@@ -1,0 +1,77 @@
+import { useState } from "react";
+import { X } from "lucide-react";
+import gallery1 from "@/assets/gallery-1.jpg";
+import gallery2 from "@/assets/gallery-2.jpg";
+import gallery3 from "@/assets/gallery-3.jpg";
+import gallery4 from "@/assets/gallery-4.jpg";
+import gallery5 from "@/assets/gallery-5.jpg";
+import gallery6 from "@/assets/gallery-6.jpg";
+
+const images = [
+  { src: gallery1, alt: "Grand Exterior View" },
+  { src: gallery2, alt: "Wedding Ceremony Setup" },
+  { src: gallery3, alt: "Catering & Buffet" },
+  { src: gallery4, alt: "Dance Floor & Entertainment" },
+  { src: gallery5, alt: "Bridal Room" },
+  { src: gallery6, alt: "Outdoor Garden Venue" },
+];
+
+const Gallery = () => {
+  const [selected, setSelected] = useState<number | null>(null);
+
+  return (
+    <div className="pt-20">
+      <section className="section-padding max-w-7xl mx-auto">
+        <h1 className="heading-xl text-center text-foreground mb-4">Our Gallery</h1>
+        <p className="text-body text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
+          Explore the elegance and grandeur of A.R Grand through our photo gallery.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {images.map((img, i) => (
+            <button
+              key={i}
+              onClick={() => setSelected(i)}
+              className="overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow group cursor-pointer"
+            >
+              <img
+                src={img.src}
+                alt={img.alt}
+                width={800}
+                height={600}
+                loading="lazy"
+                className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+              <div className="p-3 bg-card">
+                <p className="font-body text-sm text-muted-foreground">{img.alt}</p>
+              </div>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* Lightbox */}
+      {selected !== null && (
+        <div
+          className="fixed inset-0 z-50 bg-foreground/90 flex items-center justify-center p-4"
+          onClick={() => setSelected(null)}
+        >
+          <button
+            className="absolute top-6 right-6 text-primary-foreground hover:opacity-80"
+            onClick={() => setSelected(null)}
+            aria-label="Close"
+          >
+            <X size={32} />
+          </button>
+          <img
+            src={images[selected].src}
+            alt={images[selected].alt}
+            className="max-w-full max-h-[85vh] object-contain rounded-lg"
+          />
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Gallery;
