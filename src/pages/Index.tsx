@@ -19,9 +19,9 @@ const Index = () => (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div>
           <p className="font-body text-sm tracking-widest uppercase text-muted-foreground mb-2">Welcome to</p>
-          <h2 className="heading-lg text-foreground mb-6">A.R Grand Marriage Hall</h2>
+          <h2 className="heading-lg text-foreground mb-6">A.R Grand Marriage Hall, Kodungaiyur</h2>
           <p className="text-body text-muted-foreground mb-4">
-            Nestled in the heart of the city, A.R Grand is a premier wedding venue that blends timeless elegance with modern amenities. Our beautifully appointed halls provide the perfect backdrop for weddings, receptions, engagements, and all your special celebrations.
+            Located on Sidco Main Road near TNEB in Kodungaiyur, Chennai, A.R Grand is a premier marriage hall and wedding venue that blends timeless elegance with modern amenities. Our beautifully appointed halls provide the perfect backdrop for weddings, receptions, engagements, and all your special celebrations.
           </p>
           <p className="text-body text-muted-foreground mb-8">
             With over a decade of experience hosting unforgettable events, our dedicated team ensures every detail is perfect — from exquisite décor to world-class catering. Let us make your dream celebration a reality.

@@ -17,7 +17,7 @@ const Contact = () => (
             </div>
             <div>
               <h3 className="font-heading text-xl text-foreground mb-1">Address</h3>
-              <p className="text-body text-muted-foreground">123 Wedding Avenue, Anna Nagar, Chennai, Tamil Nadu 600040</p>
+              <p className="text-body text-muted-foreground">No 5C/1, Sidco Main Rd, near TNEB, Kodungaiyur (East), Vivekananda Nagar, Kodungaiyur, Chennai, Tamil Nadu 600118</p>
             </div>
           </div>
           <div className="flex items-start gap-4">
@@ -54,7 +54,7 @@ const Contact = () => (
         {/* Google Map */}
         <div className="rounded-lg overflow-hidden shadow-lg h-96 lg:h-auto">
           <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3886.0!2d80.2!3d13.08!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDA0JzQ4LjAiTiA4MMKwMTInMDAuMCJF!5e0!3m2!1sen!2sin!4v1"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3886.0!2d80.2464!3d13.1167!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a5264000000000%3A0x0!2sKodungaiyur%2C+Chennai!5e0!3m2!1sen!2sin!4v1"
             width="100%"
             height="100%"
             style={{ border: 0, minHeight: "384px" }}
