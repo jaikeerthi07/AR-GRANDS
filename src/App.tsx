@@ -10,6 +10,7 @@ import Contact from "./pages/Contact";
 import Enquiry from "./pages/Enquiry";
 import Terms from "./pages/Terms";
 import Events from "./pages/Events";
+import AdminLogin from "./pages/AdminLogin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
