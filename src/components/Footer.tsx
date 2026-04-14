@@ -41,7 +41,7 @@ const Footer = () => (
             </div>
             <div className="flex items-center gap-2 opacity-80">
               <MapPin size={16} />
-              <span className="text-body">123 Wedding Avenue, Chennai</span>
+              <span className="text-body">No 5C/1, Sidco Main Rd, near TNEB, Kodungaiyur (East), Vivekananda Nagar, Kodungaiyur, Chennai, Tamil Nadu 600118</span>
             </div>
           </div>
         </div>
