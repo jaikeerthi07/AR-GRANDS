@@ -1,7 +1,7 @@
 import HeroSlider from "@/components/HeroSlider";
 import { Link } from "react-router-dom";
 import { Users, Calendar, Utensils, Music } from "lucide-react";
-import gallery1 from "@/assets/gallery-1.jpg";
+import aboutExterior from "@/assets/about-exterior.jpg";
 
 const features = [
   { icon: Users, title: "50–250 Guests", desc: "Flexible halls for intimate gatherings to grand celebrations" },
@@ -31,7 +31,7 @@ const Index = () => (
           </Link>
         </div>
         <div className="rounded-lg overflow-hidden shadow-lg">
-          <img src={gallery1} alt="A.R Grand Exterior" width={800} height={600} loading="lazy" className="w-full h-auto object-cover" />
+          <img src={aboutExterior} alt="A.R Grand Exterior" width={800} height={600} loading="lazy" className="w-full h-auto object-cover" />
         </div>
       </div>
     </section>
