@@ -1,84 +1,333 @@
-import { Calendar } from "lucide-react";
+import { useState } from "react";
+import { Calendar, Plus, Trash2, Edit2, LogOut, LogIn } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAdmin } from "@/hooks/useAdmin";
+import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
+import type { Tables } from "@/integrations/supabase/types";
 
-const upcomingEvents = [
-  { date: "2026-04-20", type: "Wedding", hall: "Grand Hall (250)", status: "Booked" },
-  { date: "2026-04-22", type: "Reception", hall: "Banquet Hall (100)", status: "Booked" },
-  { date: "2026-04-25", type: "Engagement", hall: "Grand Hall (250)", status: "Booked" },
-  { date: "2026-05-01", type: "Wedding", hall: "Grand Hall (250)", status: "Booked" },
-  { date: "2026-05-03", type: "Birthday Party", hall: "Banquet Hall (100)", status: "Booked" },
-];
+type BookedEvent = Tables<"booked_events">;
 
-const availableDates = [
-  { date: "2026-04-18", halls: "All Halls Available" },
-  { date: "2026-04-19", halls: "Banquet Hall (100) Available" },
-  { date: "2026-04-21", halls: "All Halls Available" },
-  { date: "2026-04-23", halls: "All Halls Available" },
-  { date: "2026-04-24", halls: "Grand Hall (250) Available" },
-  { date: "2026-04-26", halls: "All Halls Available" },
-  { date: "2026-04-27", halls: "All Halls Available" },
-  { date: "2026-04-28", halls: "Banquet Hall (100) Available" },
-  { date: "2026-04-29", halls: "All Halls Available" },
-  { date: "2026-04-30", halls: "All Halls Available" },
-];
+const halls = ["Grand Hall (250)", "Banquet Hall (100)"];
+const eventTypes = ["Wedding", "Reception", "Engagement", "Birthday Party", "Corporate Event", "Other"];
 
 const formatDate = (dateStr: string) => {
   const d = new Date(dateStr + "T00:00:00");
   return d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
 };
 
-const Events = () => (
-  <div className="pt-20">
-    <section className="section-padding max-w-6xl mx-auto">
-      <h1 className="heading-xl text-center text-foreground mb-4">Events & Availability</h1>
-      <p className="text-body text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
-        Check our upcoming bookings and available dates. Contact us to reserve your preferred date.
-      </p>
+const Events = () => {
+  const { isAdmin, loading: adminLoading, logout } = useAdmin();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        {/* Scheduled Bookings */}
-        <div>
-          <h2 className="heading-md text-foreground mb-6 flex items-center gap-2">
-            <Calendar className="text-primary" size={24} />
-            Scheduled Bookings
-          </h2>
-          <div className="space-y-3">
-            {upcomingEvents.map((event, i) => (
-              <div key={i} className="bg-card p-4 rounded-lg border border-border flex items-center justify-between">
-                <div>
-                  <p className="font-body font-semibold text-foreground">{event.type}</p>
-                  <p className="font-body text-sm text-muted-foreground">{formatDate(event.date)} • {event.hall}</p>
-                </div>
-                <span className="bg-destructive/10 text-destructive font-body text-xs px-3 py-1 rounded-full font-semibold">
-                  {event.status}
-                </span>
+  const [showForm, setShowForm] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<BookedEvent | null>(null);
+  const [formData, setFormData] = useState({ event_date: "", event_type: "Wedding", hall: halls[0], status: "Booked" });
+  const [selectedMonth, setSelectedMonth] = useState(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  });
+
+  const { data: events = [], isLoading } = useQuery({
+    queryKey: ["booked_events"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("booked_events")
+        .select("*")
+        .order("event_date", { ascending: true });
+      if (error) throw error;
+      return data as BookedEvent[];
+    },
+  });
+
+  const addMutation = useMutation({
+    mutationFn: async (data: { event_date: string; event_type: string; hall: string; status: string }) => {
+      const { error } = await supabase.from("booked_events").insert(data);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["booked_events"] });
+      toast({ title: "Booking added successfully" });
+      resetForm();
+    },
+    onError: (err: Error) => toast({ title: "Error", description: err.message, variant: "destructive" }),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, ...data }: { id: string; event_date: string; event_type: string; hall: string; status: string }) => {
+      const { error } = await supabase.from("booked_events").update(data).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["booked_events"] });
+      toast({ title: "Booking updated successfully" });
+      resetForm();
+    },
+    onError: (err: Error) => toast({ title: "Error", description: err.message, variant: "destructive" }),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("booked_events").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["booked_events"] });
+      toast({ title: "Booking deleted" });
+    },
+    onError: (err: Error) => toast({ title: "Error", description: err.message, variant: "destructive" }),
+  });
+
+  const resetForm = () => {
+    setShowForm(false);
+    setEditingEvent(null);
+    setFormData({ event_date: "", event_type: "Wedding", hall: halls[0], status: "Booked" });
+  };
+
+  const handleEdit = (event: BookedEvent) => {
+    setEditingEvent(event);
+    setFormData({
+      event_date: event.event_date,
+      event_type: event.event_type,
+      hall: event.hall,
+      status: event.status,
+    });
+    setShowForm(true);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editingEvent) {
+      updateMutation.mutate({ id: editingEvent.id, ...formData });
+    } else {
+      addMutation.mutate(formData);
+    }
+  };
+
+  // Filter events by selected month
+  const filteredEvents = events.filter((e) => e.event_date.startsWith(selectedMonth));
+
+  // Generate available dates for the selected month
+  const [year, month] = selectedMonth.split("-").map(Number);
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const bookedDatesMap = new Map<string, string[]>();
+  filteredEvents.forEach((e) => {
+    const existing = bookedDatesMap.get(e.event_date) || [];
+    existing.push(e.hall);
+    bookedDatesMap.set(e.event_date, existing);
+  });
+
+  const availableDates: { date: string; halls: string }[] = [];
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    const d = new Date(dateStr + "T00:00:00");
+    if (d < new Date(new Date().toDateString())) continue; // skip past dates
+    const bookedHalls = bookedDatesMap.get(dateStr) || [];
+    const allBooked = halls.every((h) => bookedHalls.includes(h));
+    if (!allBooked) {
+      const freeHalls = halls.filter((h) => !bookedHalls.includes(h));
+      availableDates.push({
+        date: dateStr,
+        halls: freeHalls.length === halls.length ? "All Halls Available" : freeHalls.join(", ") + " Available",
+      });
+    }
+  }
+
+  // Generate month options
+  const monthOptions: string[] = [];
+  const now = new Date();
+  for (let i = 0; i < 12; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
+    monthOptions.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+  }
+
+  const formatMonth = (m: string) => {
+    const [y, mo] = m.split("-");
+    return new Date(Number(y), Number(mo) - 1).toLocaleDateString("en-IN", { month: "long", year: "numeric" });
+  };
+
+  return (
+    <div className="pt-20">
+      <section className="section-padding max-w-6xl mx-auto">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="heading-xl text-foreground">Events & Availability</h1>
+          {!adminLoading && (
+            isAdmin ? (
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => { setShowForm(true); setEditingEvent(null); setFormData({ event_date: "", event_type: "Wedding", hall: halls[0], status: "Booked" }); }}
+                  className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg font-body font-semibold hover:bg-primary/90 transition-colors text-sm"
+                >
+                  <Plus size={16} /> Add Booking
+                </button>
+                <button
+                  onClick={logout}
+                  className="flex items-center gap-2 text-muted-foreground hover:text-foreground font-body text-sm transition-colors"
+                >
+                  <LogOut size={16} /> Logout
+                </button>
               </div>
+            ) : (
+              <Link
+                to="/admin"
+                className="flex items-center gap-2 text-muted-foreground hover:text-foreground font-body text-sm transition-colors"
+              >
+                <LogIn size={16} /> Admin
+              </Link>
+            )
+          )}
+        </div>
+        <p className="text-body text-muted-foreground mb-8 max-w-2xl">
+          Check our upcoming bookings and available dates. Contact us to reserve your preferred date.
+        </p>
+
+        {/* Month selector */}
+        <div className="mb-8">
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+            className="px-4 py-2 rounded-lg border border-border bg-card text-foreground font-body"
+          >
+            {monthOptions.map((m) => (
+              <option key={m} value={m}>{formatMonth(m)}</option>
             ))}
-          </div>
+          </select>
         </div>
 
-        {/* Available Dates */}
-        <div>
-          <h2 className="heading-md text-foreground mb-6 flex items-center gap-2">
-            <Calendar className="text-primary" size={24} />
-            Available Dates
-          </h2>
-          <div className="space-y-3">
-            {availableDates.map((slot, i) => (
-              <div key={i} className="bg-card p-4 rounded-lg border border-border flex items-center justify-between">
-                <div>
-                  <p className="font-body font-semibold text-foreground">{formatDate(slot.date)}</p>
-                  <p className="font-body text-sm text-muted-foreground">{slot.halls}</p>
-                </div>
-                <span className="bg-primary/10 text-primary font-body text-xs px-3 py-1 rounded-full font-semibold">
-                  Available
-                </span>
+        {/* Add/Edit Form (admin only) */}
+        {isAdmin && showForm && (
+          <div className="mb-8 bg-card p-6 rounded-xl border border-border">
+            <h3 className="heading-md text-foreground mb-4">{editingEvent ? "Edit Booking" : "Add New Booking"}</h3>
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div>
+                <label className="font-body text-sm text-muted-foreground block mb-1">Date</label>
+                <input
+                  type="date"
+                  value={formData.event_date}
+                  onChange={(e) => setFormData({ ...formData, event_date: e.target.value })}
+                  required
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body"
+                />
               </div>
-            ))}
+              <div>
+                <label className="font-body text-sm text-muted-foreground block mb-1">Event Type</label>
+                <select
+                  value={formData.event_type}
+                  onChange={(e) => setFormData({ ...formData, event_type: e.target.value })}
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body"
+                >
+                  {eventTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="font-body text-sm text-muted-foreground block mb-1">Hall</label>
+                <select
+                  value={formData.hall}
+                  onChange={(e) => setFormData({ ...formData, hall: e.target.value })}
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body"
+                >
+                  {halls.map((h) => <option key={h} value={h}>{h}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="font-body text-sm text-muted-foreground block mb-1">Status</label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body"
+                >
+                  <option value="Booked">Booked</option>
+                  <option value="Tentative">Tentative</option>
+                </select>
+              </div>
+              <div className="sm:col-span-2 lg:col-span-4 flex gap-3">
+                <button type="submit" className="bg-primary text-primary-foreground px-6 py-2 rounded-lg font-body font-semibold hover:bg-primary/90 transition-colors">
+                  {editingEvent ? "Update" : "Add"}
+                </button>
+                <button type="button" onClick={resetForm} className="px-6 py-2 rounded-lg border border-border text-foreground font-body hover:bg-muted transition-colors">
+                  Cancel
+                </button>
+              </div>
+            </form>
           </div>
-        </div>
-      </div>
-    </section>
-  </div>
-);
+        )}
+
+        {isLoading ? (
+          <p className="text-muted-foreground font-body text-center py-12">Loading...</p>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Scheduled Bookings */}
+            <div>
+              <h2 className="heading-md text-foreground mb-6 flex items-center gap-2">
+                <Calendar className="text-primary" size={24} />
+                Scheduled Bookings — {formatMonth(selectedMonth)}
+              </h2>
+              <div className="space-y-3">
+                {filteredEvents.length === 0 ? (
+                  <p className="text-muted-foreground font-body py-4">No bookings for this month.</p>
+                ) : (
+                  filteredEvents.map((event) => (
+                    <div key={event.id} className="bg-card p-4 rounded-lg border border-border flex items-center justify-between">
+                      <div>
+                        <p className="font-body font-semibold text-foreground">{event.event_type}</p>
+                        <p className="font-body text-sm text-muted-foreground">{formatDate(event.event_date)} • {event.hall}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className={`font-body text-xs px-3 py-1 rounded-full font-semibold ${
+                          event.status === "Booked"
+                            ? "bg-destructive/10 text-destructive"
+                            : "bg-yellow-100 text-yellow-700"
+                        }`}>
+                          {event.status}
+                        </span>
+                        {isAdmin && (
+                          <>
+                            <button onClick={() => handleEdit(event)} className="text-muted-foreground hover:text-primary transition-colors">
+                              <Edit2 size={16} />
+                            </button>
+                            <button onClick={() => deleteMutation.mutate(event.id)} className="text-muted-foreground hover:text-destructive transition-colors">
+                              <Trash2 size={16} />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Available Dates */}
+            <div>
+              <h2 className="heading-md text-foreground mb-6 flex items-center gap-2">
+                <Calendar className="text-primary" size={24} />
+                Available Dates — {formatMonth(selectedMonth)}
+              </h2>
+              <div className="space-y-3">
+                {availableDates.length === 0 ? (
+                  <p className="text-muted-foreground font-body py-4">No available dates this month.</p>
+                ) : (
+                  availableDates.map((slot, i) => (
+                    <div key={i} className="bg-card p-4 rounded-lg border border-border flex items-center justify-between">
+                      <div>
+                        <p className="font-body font-semibold text-foreground">{formatDate(slot.date)}</p>
+                        <p className="font-body text-sm text-muted-foreground">{slot.halls}</p>
+                      </div>
+                      <span className="bg-primary/10 text-primary font-body text-xs px-3 py-1 rounded-full font-semibold">
+                        Available
+                      </span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
+    </div>
+  );
+};
 
 export default Events;
