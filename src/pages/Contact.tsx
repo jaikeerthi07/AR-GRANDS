@@ -17,7 +17,7 @@ const Contact = () => (
             </div>
             <div>
               <h3 className="font-heading text-xl text-foreground mb-1">Address</h3>
-              <p className="text-body text-muted-foreground">123 Wedding Avenue, Anna Nagar, Chennai, Tamil Nadu 600040</p>
+              <p className="text-body text-muted-foreground">No 5C/1, Sidco Main Rd, near TNEB, Kodungaiyur (East), Vivekananda Nagar, Kodungaiyur, Chennai, Tamil Nadu 600118</p>
             </div>
           </div>
           <div className="flex items-start gap-4">
