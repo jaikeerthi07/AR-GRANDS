@@ -8,12 +8,12 @@ import gallery5 from "@/assets/gallery-5.jpg";
 import gallery6 from "@/assets/gallery-6.jpg";
 
 const images = [
-  { src: gallery1, alt: "Grand Exterior View" },
-  { src: gallery2, alt: "Wedding Ceremony Setup" },
-  { src: gallery3, alt: "Catering & Buffet" },
-  { src: gallery4, alt: "Dance Floor & Entertainment" },
-  { src: gallery5, alt: "Bridal Room" },
-  { src: gallery6, alt: "Outdoor Garden Venue" },
+  { src: gallery1, alt: "A.R Grand Marriage Hall Aerial Exterior View" },
+  { src: gallery2, alt: "Elegant Wedding Stage Decoration with Floral Arch" },
+  { src: gallery3, alt: "Close-up of Bridal Stage with Floral Arrangements" },
+  { src: gallery4, alt: "Grand Entrance with Traditional Floral Garlands" },
+  { src: gallery5, alt: "Hall Front View with Stage and Seating" },
+  { src: gallery6, alt: "Hall Back View with Full Seating Arrangement" },
 ];
 
 const Gallery = () => {
