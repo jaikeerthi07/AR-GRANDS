@@ -63,7 +63,7 @@ const Index = () => (
       <div className="relative w-full max-w-4xl mx-auto aspect-video rounded-lg overflow-hidden shadow-lg">
         <iframe
           className="absolute inset-0 w-full h-full"
-          src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+          src="https://www.youtube.com/embed/RN0FEACG9W0"
           title="A.R Grand Virtual Tour"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
