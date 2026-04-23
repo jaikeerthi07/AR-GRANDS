@@ -6,6 +6,10 @@ import gallery3 from "@/assets/gallery-3.jpg";
 import gallery4 from "@/assets/gallery-4.jpg";
 import gallery5 from "@/assets/gallery-5.jpg";
 import gallery6 from "@/assets/gallery-6.jpg";
+import gallery7 from "@/assets/gallery-7.jpg";
+import gallery8 from "@/assets/gallery-8.jpg";
+import gallery9 from "@/assets/gallery-9.jpg";
+import gallery10 from "@/assets/gallery-10.jpg";
 
 const images = [
   { src: gallery1, alt: "A.R Grand Marriage Hall Aerial Exterior View" },
@@ -14,6 +18,10 @@ const images = [
   { src: gallery4, alt: "Grand Entrance with Traditional Floral Garlands" },
   { src: gallery5, alt: "Hall Front View with Stage and Seating" },
   { src: gallery6, alt: "Hall Back View with Full Seating Arrangement" },
+  { src: gallery7, alt: "Hall Side View with Stage and Seated Layout" },
+  { src: gallery8, alt: "Spacious Hall Interior with Decorated Seating" },
+  { src: gallery9, alt: "Wide Hall View Showcasing Capacity and Decor" },
+  { src: gallery10, alt: "Lift and Staircase Access to Marriage Hall" },
 ];
 
 const Gallery = () => {
