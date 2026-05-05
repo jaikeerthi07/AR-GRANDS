@@ -24,7 +24,7 @@ const Events = () => {
 
   const [showForm, setShowForm] = useState(false);
   const [editingEvent, setEditingEvent] = useState<BookedEvent | null>(null);
-  const [formData, setFormData] = useState({ event_date: "", event_type: "Wedding", hall: halls[0], status: "Booked" });
+  const [formData, setFormData] = useState({ event_date: "", event_type: "Wedding", hall: halls[0], status: "Booked", start_time: "", end_time: "" });
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
@@ -43,8 +43,12 @@ const Events = () => {
   });
 
   const addMutation = useMutation({
-    mutationFn: async (data: { event_date: string; event_type: string; hall: string; status: string }) => {
-      const { error } = await supabase.from("booked_events").insert(data);
+    mutationFn: async (data: { event_date: string; event_type: string; hall: string; status: string; start_time: string; end_time: string }) => {
+      const { error } = await supabase.from("booked_events").insert({
+        ...data,
+        start_time: data.start_time || null,
+        end_time: data.end_time || null,
+      });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -56,8 +60,12 @@ const Events = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, ...data }: { id: string; event_date: string; event_type: string; hall: string; status: string }) => {
-      const { error } = await supabase.from("booked_events").update(data).eq("id", id);
+    mutationFn: async ({ id, ...data }: { id: string; event_date: string; event_type: string; hall: string; status: string; start_time: string; end_time: string }) => {
+      const { error } = await supabase.from("booked_events").update({
+        ...data,
+        start_time: data.start_time || null,
+        end_time: data.end_time || null,
+      }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -83,7 +91,7 @@ const Events = () => {
   const resetForm = () => {
     setShowForm(false);
     setEditingEvent(null);
-    setFormData({ event_date: "", event_type: "Wedding", hall: halls[0], status: "Booked" });
+    setFormData({ event_date: "", event_type: "Wedding", hall: halls[0], status: "Booked", start_time: "", end_time: "" });
   };
 
   const handleEdit = (event: BookedEvent) => {
@@ -93,6 +101,8 @@ const Events = () => {
       event_type: event.event_type,
       hall: event.hall,
       status: event.status,
+      start_time: event.start_time || "",
+      end_time: event.end_time || "",
     });
     setShowForm(true);
   };
@@ -157,7 +167,7 @@ const Events = () => {
             isAdmin ? (
               <div className="flex items-center gap-3">
                 <button
-                  onClick={() => { setShowForm(true); setEditingEvent(null); setFormData({ event_date: "", event_type: "Wedding", hall: halls[0], status: "Booked" }); }}
+                  onClick={() => { setShowForm(true); setEditingEvent(null); setFormData({ event_date: "", event_type: "Wedding", hall: halls[0], status: "Booked", start_time: "", end_time: "" }); }}
                   className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg font-body font-semibold hover:bg-primary/90 transition-colors text-sm"
                 >
                   <Plus size={16} /> Add Booking
@@ -242,6 +252,24 @@ const Events = () => {
                   <option value="Tentative">Tentative</option>
                 </select>
               </div>
+              <div>
+                <label className="font-body text-sm text-muted-foreground block mb-1">Preferred Start Time</label>
+                <input
+                  type="time"
+                  value={formData.start_time}
+                  onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body"
+                />
+              </div>
+              <div>
+                <label className="font-body text-sm text-muted-foreground block mb-1">Preferred End Time</label>
+                <input
+                  type="time"
+                  value={formData.end_time}
+                  onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body"
+                />
+              </div>
               <div className="sm:col-span-2 lg:col-span-4 flex gap-3">
                 <button type="submit" className="bg-primary text-primary-foreground px-6 py-2 rounded-lg font-body font-semibold hover:bg-primary/90 transition-colors">
                   {editingEvent ? "Update" : "Add"}
@@ -272,7 +300,7 @@ const Events = () => {
                     <div key={event.id} className="bg-card p-4 rounded-lg border border-border flex items-center justify-between">
                       <div>
                         <p className="font-body font-semibold text-foreground">{event.event_type}</p>
-                        <p className="font-body text-sm text-muted-foreground">{formatDate(event.event_date)} • {event.hall}</p>
+                        <p className="font-body text-sm text-muted-foreground">{formatDate(event.event_date)} • {event.hall}{event.start_time || event.end_time ? ` • ${event.start_time?.slice(0,5) || "?"} – ${event.end_time?.slice(0,5) || "?"}` : ""}</p>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className={`font-body text-xs px-3 py-1 rounded-full font-semibold ${

@@ -17,28 +17,34 @@ export type Database = {
       booked_events: {
         Row: {
           created_at: string
+          end_time: string | null
           event_date: string
           event_type: string
           hall: string
           id: string
+          start_time: string | null
           status: string
           updated_at: string
         }
         Insert: {
           created_at?: string
+          end_time?: string | null
           event_date: string
           event_type: string
           hall: string
           id?: string
+          start_time?: string | null
           status?: string
           updated_at?: string
         }
         Update: {
           created_at?: string
+          end_time?: string | null
           event_date?: string
           event_type?: string
           hall?: string
           id?: string
+          start_time?: string | null
           status?: string
           updated_at?: string
         }
