@@ -24,7 +24,7 @@ const Events = () => {
 
   const [showForm, setShowForm] = useState(false);
   const [editingEvent, setEditingEvent] = useState<BookedEvent | null>(null);
-  const [formData, setFormData] = useState({ event_date: "", event_type: "Wedding", hall: halls[0], status: "Booked" });
+  const [formData, setFormData] = useState({ event_date: "", event_type: "Wedding", hall: halls[0], status: "Booked", start_time: "", end_time: "" });
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
