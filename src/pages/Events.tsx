@@ -83,7 +83,7 @@ const Events = () => {
   const resetForm = () => {
     setShowForm(false);
     setEditingEvent(null);
-    setFormData({ event_date: "", event_type: "Wedding", hall: halls[0], status: "Booked" });
+    setFormData({ event_date: "", event_type: "Wedding", hall: halls[0], status: "Booked", start_time: "", end_time: "" });
   };
 
   const handleEdit = (event: BookedEvent) => {
@@ -157,7 +157,7 @@ const Events = () => {
             isAdmin ? (
               <div className="flex items-center gap-3">
                 <button
-                  onClick={() => { setShowForm(true); setEditingEvent(null); setFormData({ event_date: "", event_type: "Wedding", hall: halls[0], status: "Booked" }); }}
+                  onClick={() => { setShowForm(true); setEditingEvent(null); setFormData({ event_date: "", event_type: "Wedding", hall: halls[0], status: "Booked", start_time: "", end_time: "" }); }}
                   className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg font-body font-semibold hover:bg-primary/90 transition-colors text-sm"
                 >
                   <Plus size={16} /> Add Booking
