@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import hero1 from "@/assets/hero-1.jpg";
 import hero2 from "@/assets/hero-2.jpg";
 import hero3 from "@/assets/hero-3.jpg";
@@ -13,6 +13,7 @@ const slides = [
 
 const HeroSlider = () => {
   const [current, setCurrent] = useState(0);
+  const [loaded, setLoaded] = useState<boolean[]>(() => slides.map(() => false));
 
   useEffect(() => {
     const timer = setInterval(() => setCurrent((prev) => (prev + 1) % slides.length), 5000);
@@ -24,7 +25,12 @@ const HeroSlider = () => {
   const next = () => setCurrent((c) => (c + 1) % slides.length);
 
   return (
-    <section className="relative h-screen w-full overflow-hidden">
+    <section className="relative h-screen w-full overflow-hidden bg-muted">
+      {!loaded[current] && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-muted">
+          <Loader2 className="animate-spin text-primary" size={48} />
+        </div>
+      )}
       {slides.map((slide, i) => (
         <div
           key={i}
@@ -38,6 +44,7 @@ const HeroSlider = () => {
             className="w-full h-full object-cover"
             width={1920}
             height={1080}
+            onLoad={() => setLoaded((prev) => { const n = [...prev]; n[i] = true; return n; })}
             {...(i === 0 ? {} : { loading: "lazy" as const })}
           />
           <div className="absolute inset-0 bg-foreground/40" />

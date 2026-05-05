@@ -1,4 +1,5 @@
-import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, MessageCircle } from "lucide-react";
+import SocialLinks from "@/components/SocialLinks";
 
 const Contact = () => (
   <div className="pt-20">
@@ -48,6 +49,21 @@ const Contact = () => (
               <h3 className="font-heading text-xl text-foreground mb-1">Working Hours</h3>
               <p className="text-body text-muted-foreground">Mon – Sun: 9:00 AM – 9:00 PM</p>
             </div>
+          </div>
+
+          <a
+            href="https://wa.me/919791165395?text=Hi%2C%20I%27d%20like%20to%20enquire%20about%20A.R%20Grand."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-md bg-[#25D366] text-white hover:opacity-90 transition-opacity w-fit font-body text-sm tracking-wider uppercase"
+          >
+            <MessageCircle size={18} />
+            Message us on WhatsApp
+          </a>
+
+          <div>
+            <h3 className="font-heading text-xl text-foreground mb-3">Follow Us</h3>
+            <SocialLinks />
           </div>
         </div>
 

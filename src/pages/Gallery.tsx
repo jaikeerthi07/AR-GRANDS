@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import gallery1 from "@/assets/gallery-1.jpg";
 import gallery2 from "@/assets/gallery-2.jpg";
 import gallery3 from "@/assets/gallery-3.jpg";
@@ -26,6 +27,7 @@ const images = [
 
 const Gallery = () => {
   const [selected, setSelected] = useState<number | null>(null);
+  const [loaded, setLoaded] = useState<Record<number, boolean>>({});
 
   return (
     <div className="pt-20">
@@ -40,16 +42,20 @@ const Gallery = () => {
             <button
               key={i}
               onClick={() => setSelected(i)}
-              className="overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow group cursor-pointer"
+              className="overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow group cursor-pointer text-left"
             >
-              <img
-                src={img.src}
-                alt={img.alt}
-                width={800}
-                height={600}
-                loading="lazy"
-                className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
-              />
+              <div className="relative w-full h-64 bg-muted">
+                {!loaded[i] && <Skeleton className="absolute inset-0 w-full h-full" />}
+                <img
+                  src={img.src}
+                  alt={img.alt}
+                  width={800}
+                  height={600}
+                  loading="lazy"
+                  onLoad={() => setLoaded((prev) => ({ ...prev, [i]: true }))}
+                  className={`w-full h-64 object-cover group-hover:scale-105 transition-all duration-500 ${loaded[i] ? "opacity-100" : "opacity-0"}`}
+                />
+              </div>
               <div className="p-3 bg-card">
                 <p className="font-body text-sm text-muted-foreground">{img.alt}</p>
               </div>
@@ -71,11 +77,16 @@ const Gallery = () => {
           >
             <X size={32} />
           </button>
-          <img
-            src={images[selected].src}
-            alt={images[selected].alt}
-            className="max-w-full max-h-[85vh] object-contain rounded-lg"
-          />
+          <div className="relative">
+            {!loaded[selected] && (
+              <Loader2 className="absolute inset-0 m-auto animate-spin text-primary-foreground" size={48} />
+            )}
+            <img
+              src={images[selected].src}
+              alt={images[selected].alt}
+              className="max-w-full max-h-[85vh] object-contain rounded-lg"
+            />
+          </div>
         </div>
       )}
     </div>
