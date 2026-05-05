@@ -252,6 +252,24 @@ const Events = () => {
                   <option value="Tentative">Tentative</option>
                 </select>
               </div>
+              <div>
+                <label className="font-body text-sm text-muted-foreground block mb-1">Preferred Start Time</label>
+                <input
+                  type="time"
+                  value={formData.start_time}
+                  onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body"
+                />
+              </div>
+              <div>
+                <label className="font-body text-sm text-muted-foreground block mb-1">Preferred End Time</label>
+                <input
+                  type="time"
+                  value={formData.end_time}
+                  onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground font-body"
+                />
+              </div>
               <div className="sm:col-span-2 lg:col-span-4 flex gap-3">
                 <button type="submit" className="bg-primary text-primary-foreground px-6 py-2 rounded-lg font-body font-semibold hover:bg-primary/90 transition-colors">
                   {editingEvent ? "Update" : "Add"}
