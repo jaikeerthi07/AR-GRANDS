@@ -101,6 +101,8 @@ const Events = () => {
       event_type: event.event_type,
       hall: event.hall,
       status: event.status,
+      start_time: event.start_time || "",
+      end_time: event.end_time || "",
     });
     setShowForm(true);
   };
