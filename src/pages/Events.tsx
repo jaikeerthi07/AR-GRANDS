@@ -300,7 +300,7 @@ const Events = () => {
                     <div key={event.id} className="bg-card p-4 rounded-lg border border-border flex items-center justify-between">
                       <div>
                         <p className="font-body font-semibold text-foreground">{event.event_type}</p>
-                        <p className="font-body text-sm text-muted-foreground">{formatDate(event.event_date)} • {event.hall}</p>
+                        <p className="font-body text-sm text-muted-foreground">{formatDate(event.event_date)} • {event.hall}{event.start_time || event.end_time ? ` • ${event.start_time?.slice(0,5) || "?"} – ${event.end_time?.slice(0,5) || "?"}` : ""}</p>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className={`font-body text-xs px-3 py-1 rounded-full font-semibold ${
