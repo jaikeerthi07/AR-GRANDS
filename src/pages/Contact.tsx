@@ -26,8 +26,7 @@ const Contact = () => (
             </div>
             <div>
               <h3 className="font-heading text-xl text-foreground mb-1">Phone</h3>
-              <p className="text-body text-muted-foreground">+91 98765 43210</p>
-              <p className="text-body text-muted-foreground">+91 98765 43211</p>
+              <p className="text-body text-muted-foreground">+91 94440 43451</p>
             </div>
           </div>
           <div className="flex items-start gap-4">
