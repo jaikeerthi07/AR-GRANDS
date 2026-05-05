@@ -43,8 +43,12 @@ const Events = () => {
   });
 
   const addMutation = useMutation({
-    mutationFn: async (data: { event_date: string; event_type: string; hall: string; status: string }) => {
-      const { error } = await supabase.from("booked_events").insert(data);
+    mutationFn: async (data: { event_date: string; event_type: string; hall: string; status: string; start_time: string; end_time: string }) => {
+      const { error } = await supabase.from("booked_events").insert({
+        ...data,
+        start_time: data.start_time || null,
+        end_time: data.end_time || null,
+      });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -56,8 +60,12 @@ const Events = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, ...data }: { id: string; event_date: string; event_type: string; hall: string; status: string }) => {
-      const { error } = await supabase.from("booked_events").update(data).eq("id", id);
+    mutationFn: async ({ id, ...data }: { id: string; event_date: string; event_type: string; hall: string; status: string; start_time: string; end_time: string }) => {
+      const { error } = await supabase.from("booked_events").update({
+        ...data,
+        start_time: data.start_time || null,
+        end_time: data.end_time || null,
+      }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
