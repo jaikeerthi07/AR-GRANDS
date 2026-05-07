@@ -3,19 +3,23 @@ import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
 import SocialLinks from "@/components/SocialLinks";
 
 const Footer = () => (
-  <footer className="bg-foreground text-primary-foreground">
-    <div className="max-w-7xl mx-auto section-padding">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+  <footer className="relative noir-bg text-cream overflow-hidden">
+    <div className="absolute inset-0 opacity-[0.05]" style={{ background: "var(--gradient-gold)" }} />
+    <div className="relative max-w-7xl mx-auto section-padding">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
         <div>
-          <h3 className="heading-md text-primary-foreground mb-4">A.R Grand</h3>
-          <p className="text-body opacity-80 mb-6">
-            Your dream wedding venue. Elegant spaces for unforgettable celebrations.
+          <h3 className="font-heading text-3xl mb-2 tracking-[0.1em]">
+            A.R <span className="gold-text">Grand</span>
+          </h3>
+          <span className="gold-divider mb-5" />
+          <p className="text-body text-cream/70 mb-6 leading-relaxed">
+            Your dream wedding venue in Kodungaiyur, North Chennai. Elegant spaces for unforgettable celebrations, crafted with care since over a decade.
           </p>
           <SocialLinks />
         </div>
         <div>
-          <h4 className="font-heading text-xl mb-4">Quick Links</h4>
-          <div className="flex flex-col gap-2">
+          <h4 className="eyebrow mb-5 text-accent">Quick Links</h4>
+          <div className="grid grid-cols-2 gap-y-3">
             {[
               { to: "/", label: "Home" },
               { to: "/gallery", label: "Gallery" },
@@ -25,41 +29,49 @@ const Footer = () => (
               { to: "/enquiry", label: "Book Now" },
               { to: "/terms", label: "Terms" },
             ].map((link) => (
-              <Link key={link.to} to={link.to} className="text-body opacity-80 hover:opacity-100 transition-opacity">
+              <Link
+                key={link.to}
+                to={link.to}
+                className="text-body text-cream/70 hover:text-accent transition-colors duration-300 link-underline w-fit"
+              >
                 {link.label}
               </Link>
             ))}
           </div>
         </div>
         <div>
-          <h4 className="font-heading text-xl mb-4">Contact</h4>
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2 opacity-80">
-              <Phone size={16} />
-              <span className="text-body">+91 94440 43451</span>
+          <h4 className="eyebrow mb-5 text-accent">Get In Touch</h4>
+          <div className="flex flex-col gap-4">
+            <div className="flex items-start gap-3 text-cream/75">
+              <Phone size={16} className="mt-1 shrink-0 text-accent" />
+              <div className="text-body text-sm">
+                <p>+91 94440 43451</p>
+                <p>+91 97911 65395</p>
+              </div>
             </div>
-            <div className="flex items-center gap-2 opacity-80">
-              <Mail size={16} />
-              <span className="text-body">info@argrand.com</span>
+            <div className="flex items-start gap-3 text-cream/75">
+              <Mail size={16} className="mt-1 shrink-0 text-accent" />
+              <span className="text-body text-sm">info@argrand.com</span>
             </div>
-            <div className="flex items-center gap-2 opacity-80">
-              <MapPin size={16} />
-              <span className="text-body">No 5C/1, Sidco Main Rd, near TNEB, Kodungaiyur (East), Vivekananda Nagar, Kodungaiyur, Chennai, Tamil Nadu 600118</span>
+            <div className="flex items-start gap-3 text-cream/75">
+              <MapPin size={16} className="mt-1 shrink-0 text-accent" />
+              <span className="text-body text-sm leading-relaxed">No 5C/1, Sidco Main Rd, near TNEB, Kodungaiyur (East), Vivekananda Nagar, Chennai – 600118</span>
             </div>
             <a
               href="https://wa.me/919791165395"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-md bg-[#25D366] text-white hover:opacity-90 transition-opacity w-fit"
+              className="inline-flex items-center gap-2 mt-2 px-5 py-2.5 rounded-sm bg-[#25D366] text-white hover:opacity-90 transition-opacity w-fit"
             >
               <MessageCircle size={16} />
-              <span className="text-body text-sm">Message us on WhatsApp</span>
+              <span className="text-body text-xs tracking-widest uppercase">WhatsApp Us</span>
             </a>
           </div>
         </div>
       </div>
-      <div className="border-t border-primary-foreground/20 mt-12 pt-8 text-center">
-        <p className="text-body opacity-60">© 2026 A.R Grand. All rights reserved.</p>
+      <div className="border-t border-cream/10 mt-16 pt-8 flex flex-col md:flex-row items-center justify-between gap-3">
+        <p className="text-body text-cream/50 text-sm">© 2026 A.R Grand. All rights reserved.</p>
+        <p className="text-body text-cream/40 text-xs tracking-[0.25em] uppercase">Crafted with care · Kodungaiyur, Chennai</p>
       </div>
     </div>
   </footer>
