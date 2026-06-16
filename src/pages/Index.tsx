@@ -1,7 +1,7 @@
 import HeroSlider from "@/components/HeroSlider";
 import { Link } from "react-router-dom";
 import { Users, Calendar, Utensils, Music, Sparkles, Heart, Award, Star } from "lucide-react";
-import aboutExterior from "@/assets/about-exterior.jpg";
+import aboutExterior from "@/assets/about-exterior.jpg.asset.json";
 
 const features = [
   { icon: Users, title: "50–250 Guests", desc: "Flexible halls for intimate gatherings to grand celebrations" },
@@ -52,7 +52,7 @@ const Index = () => (
           <div className="absolute -inset-4 border border-accent/40 rounded-sm hidden md:block" />
           <div className="relative overflow-hidden rounded-sm shadow-[var(--shadow-elegant)] group">
             <img
-              src={aboutExterior}
+              src={aboutExterior.url}
               alt="A.R Grand Marriage Hall Exterior in Kodungaiyur, Chennai"
               width={800}
               height={1000}
