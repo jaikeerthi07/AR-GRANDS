@@ -36,7 +36,7 @@ const facilities = [
     title: "Fully Air-Conditioned Hall",
     description:
       "The entire hall is centrally air-conditioned, keeping every guest cool and comfortable in any season — perfect for Chennai weather.",
-    image: facilityAcHall,
+    image: facilityAcHallAsset.url,
     alt: "Fully air-conditioned wedding hall interior",
   },
   {
