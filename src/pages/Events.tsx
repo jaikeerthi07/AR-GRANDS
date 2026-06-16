@@ -9,7 +9,7 @@ import type { Tables } from "@/integrations/supabase/types";
 
 type BookedEvent = Tables<"booked_events">;
 
-const halls = ["Grand Hall (250)", "Banquet Hall (100)"];
+const halls = ["Grand Hall (250)"];
 const eventTypes = ["Wedding", "Reception", "Engagement", "Birthday Party", "Corporate Event", "Other"];
 
 const formatDate = (dateStr: string) => {
