@@ -52,7 +52,7 @@ const Index = () => (
           <div className="absolute -inset-4 border border-accent/40 rounded-sm hidden md:block" />
           <div className="relative overflow-hidden rounded-sm shadow-[var(--shadow-elegant)] group">
             <img
-              src={aboutExterior}
+              src={aboutExterior.url}
               alt="A.R Grand Marriage Hall Exterior in Kodungaiyur, Chennai"
               width={800}
               height={1000}
