@@ -12,7 +12,7 @@ const facilities = [
     title: "Lifts",
     description:
       "Modern passenger elevators provide easy and comfortable access to all floors of the venue, ensuring convenience for elderly guests and those with limited mobility.",
-    image: facilityLift,
+    image: facilityLiftAsset.url,
     alt: "Modern passenger lift at A.R Grand Marriage Hall",
   },
   {
