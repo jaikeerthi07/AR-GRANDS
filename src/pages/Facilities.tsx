@@ -1,5 +1,5 @@
 import { ArrowUpDown, Car, Zap, Snowflake, DoorClosed, ChefHat } from "lucide-react";
-import facilityLift from "@/assets/facility-lift.jpg";
+import facilityLiftAsset from "@/assets/facility-lift.jpg.asset.json";
 import facilityParking from "@/assets/facility-parking.jpg";
 import facilityGenset from "@/assets/facility-genset.jpg";
 import facilityAcHall from "@/assets/facility-ac-hall.jpg";
