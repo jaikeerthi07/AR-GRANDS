@@ -2,7 +2,7 @@ import { ArrowUpDown, Car, Zap, Snowflake, DoorClosed, ChefHat } from "lucide-re
 import facilityLiftAsset from "@/assets/facility-lift.jpg.asset.json";
 import facilityParking from "@/assets/facility-parking.jpg";
 import facilityGenset from "@/assets/facility-genset.jpg";
-import facilityAcHall from "@/assets/facility-ac-hall.jpg";
+import facilityAcHallAsset from "@/assets/facility-ac-hall.jpg.asset.json";
 import facilityPrivateRoom from "@/assets/facility-private-room.jpg";
 import facilityKitchen from "@/assets/facility-kitchen.jpg";
 
