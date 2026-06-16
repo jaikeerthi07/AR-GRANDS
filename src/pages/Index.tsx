@@ -1,7 +1,7 @@
 import HeroSlider from "@/components/HeroSlider";
 import { Link } from "react-router-dom";
 import { Users, Calendar, Utensils, Music, Sparkles, Heart, Award, Star } from "lucide-react";
-import aboutExterior from "@/assets/about-exterior.jpg";
+import aboutExterior from "@/assets/about-exterior.jpg.asset.json";
 
 const features = [
   { icon: Users, title: "50–250 Guests", desc: "Flexible halls for intimate gatherings to grand celebrations" },
