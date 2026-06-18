@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { X, Loader2, ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import SEO from "@/components/SEO";
 import gallery1 from "@/assets/gallery-1.jpg";
 import gallery2 from "@/assets/gallery-2.jpg";
 import gallery3 from "@/assets/gallery-3.jpg";

@@ -1,4 +1,5 @@
 import HeroSlider from "@/components/HeroSlider";
+import SEO from "@/components/SEO";
 import { Link } from "react-router-dom";
 import { Users, Calendar, Utensils, Music, Sparkles, Heart, Award, Star } from "lucide-react";
 import aboutExterior from "@/assets/about-exterior.jpg.asset.json";
@@ -25,6 +26,11 @@ const testimonials = [
 
 const Index = () => (
   <div>
+    <SEO
+      title="A.R Grand · Best Marriage Hall in Kodungaiyur, Chennai"
+      description="Premier wedding & banquet hall in Kodungaiyur, Perambur. AC halls for 50–250 guests, catering, parking, decor. Book your celebration today."
+      path="/"
+    />
     <HeroSlider />
 
     {/* About Section */}
