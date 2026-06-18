@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAdmin } from "@/hooks/useAdmin";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
+import SEO from "@/components/SEO";
 import type { Tables } from "@/integrations/supabase/types";
 
 type BookedEvent = Tables<"booked_events">;
@@ -160,6 +161,11 @@ const Events = () => {
 
   return (
     <div className="pt-20">
+      <SEO
+        title="Events & Date Availability · A.R Grand Marriage Hall"
+        description="Check available wedding & event dates at A.R Grand Marriage Hall in Kodungaiyur, Chennai. Reserve your preferred date before it's booked."
+        path="/events"
+      />
       <section className="section-padding max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-4">
           <h1 className="heading-xl text-foreground">Events & Availability</h1>
