@@ -35,6 +35,11 @@ const Gallery = () => {
 
   return (
     <div className="pt-24">
+      <SEO
+        title="Gallery · A.R Grand Marriage Hall, Kodungaiyur Chennai"
+        description="Explore photos of A.R Grand wedding hall in Kodungaiyur — stage decor, hall interiors, seating, and exterior views of our Chennai banquet venue."
+        path="/gallery"
+      />
       {/* Page hero */}
       <section className="relative px-4 md:px-8 lg:px-16 pt-12 pb-20 text-center max-w-5xl mx-auto">
         <p className="eyebrow mb-4">A Visual Journey</p>
