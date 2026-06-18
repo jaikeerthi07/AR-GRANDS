@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin
 
-Sitemap: https://argrand-venue-showcase.lovable.app/sitemap.xml
+Sitemap: https://argrandweddinghall.com/sitemap.xml
