@@ -38,6 +38,22 @@ const Footer = () => (
               </Link>
             ))}
           </div>
+          <h4 className="eyebrow mt-8 mb-4 text-accent">Areas We Serve</h4>
+          <div className="grid grid-cols-2 gap-y-2">
+            {[
+              { to: "/locations/perambur", label: "Perambur" },
+              { to: "/locations/vyasarpadi", label: "Vyasarpadi" },
+              { to: "/locations/madhavaram", label: "Madhavaram" },
+            ].map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="text-body text-cream/70 hover:text-accent transition-colors duration-300 link-underline w-fit text-sm"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
         </div>
         <div>
           <h4 className="eyebrow mb-5 text-accent">Get In Touch</h4>
