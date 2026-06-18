@@ -1,3 +1,4 @@
+import SEO from "@/components/SEO";
 import { ArrowUpDown, Car, Zap, Snowflake, DoorClosed, ChefHat } from "lucide-react";
 import facilityLiftAsset from "@/assets/facility-lift.jpg.asset.json";
 import facilityParking from "@/assets/facility-parking.jpg";
@@ -59,6 +60,11 @@ const facilities = [
 
 const Facilities = () => (
   <div className="pt-20">
+    <SEO
+      title="Facilities & Amenities · A.R Grand Marriage Hall Chennai"
+      description="Lifts, AC halls, ample parking, generator backup, bridal rooms & kitchen. Every amenity for your wedding at A.R Grand, Kodungaiyur Chennai."
+      path="/facilities"
+    />
     <section className="section-padding max-w-7xl mx-auto">
       <h1 className="heading-xl text-center text-foreground mb-4">Our Facilities</h1>
       <p className="text-body text-center text-muted-foreground mb-16 max-w-2xl mx-auto">

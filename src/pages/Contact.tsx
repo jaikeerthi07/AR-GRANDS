@@ -1,8 +1,14 @@
 import { Phone, Mail, MapPin, Clock, MessageCircle } from "lucide-react";
 import SocialLinks from "@/components/SocialLinks";
+import SEO from "@/components/SEO";
 
 const Contact = () => (
   <div className="pt-20">
+    <SEO
+      title="Contact A.R Grand · Marriage Hall in Kodungaiyur, Chennai"
+      description="Visit or call A.R Grand Marriage Hall on Sidco Main Rd, Kodungaiyur. Phone +91 94440 43451. Open 9 AM – 9 PM for bookings & venue visits."
+      path="/contact"
+    />
     <section className="section-padding max-w-7xl mx-auto">
       <h1 className="heading-xl text-center text-foreground mb-4">Contact Us</h1>
       <p className="text-body text-center text-muted-foreground mb-12 max-w-2xl mx-auto">

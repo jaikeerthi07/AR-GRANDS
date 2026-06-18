@@ -1,3 +1,5 @@
+import SEO from "@/components/SEO";
+
 const sections = [
   {
     title: "1. Booking & Reservation",
@@ -62,6 +64,11 @@ const sections = [
 
 const Terms = () => (
   <div className="pt-20">
+    <SEO
+      title="Terms & Conditions · A.R Grand Marriage Hall"
+      description="Booking, cancellation, venue usage and safety terms for A.R Grand Marriage Hall in Kodungaiyur, Chennai."
+      path="/terms"
+    />
     <section className="section-padding max-w-4xl mx-auto">
       <h1 className="heading-xl text-center text-foreground mb-4">Terms & Conditions</h1>
       <p className="text-body text-center text-muted-foreground mb-12">

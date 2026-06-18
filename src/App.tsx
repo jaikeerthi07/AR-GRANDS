@@ -13,6 +13,7 @@ import Terms from "./pages/Terms";
 import Events from "./pages/Events";
 import Facilities from "./pages/Facilities";
 import AdminLogin from "./pages/AdminLogin";
+import { PerumburPage, VyasarpadiPage, MadhavaramPage } from "./pages/LocationPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,9 @@ const App = () => (
           <Route path="/events" element={<Events />} />
           <Route path="/facilities" element={<Facilities />} />
           <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/locations/perambur" element={<PerumburPage />} />
+          <Route path="/locations/vyasarpadi" element={<VyasarpadiPage />} />
+          <Route path="/locations/madhavaram" element={<MadhavaramPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
+import SEO from "@/components/SEO";
 
 const functionTypes = ["Wedding", "Reception", "Engagement", "Birthday Party", "Corporate Event", "Other"];
 const capacityOptions = ["50–100 Guests", "100–250 Guests"];
@@ -35,6 +36,11 @@ const Enquiry = () => {
 
   return (
     <div className="pt-20">
+      <SEO
+        title="Book Your Venue · A.R Grand Marriage Hall Kodungaiyur"
+        description="Enquire about wedding & event dates at A.R Grand, Kodungaiyur Chennai. Halls for 50–250 guests. Our team replies within 24 hours."
+        path="/enquiry"
+      />
       <section className="section-padding max-w-3xl mx-auto">
         <h1 className="heading-xl text-center text-foreground mb-4">Book Your Venue</h1>
         <p className="text-body text-center text-muted-foreground mb-12">
