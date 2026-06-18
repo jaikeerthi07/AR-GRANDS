@@ -9,7 +9,7 @@ interface LocationPageProps {
   distance: string;
   intro: string;
   landmarks: string[];
-  nearbyAreas: string[];
+  nearbyAreas: { name: string; slug: string }[];
 }
 
 const LocationPage = ({ area, slug, distance, intro, landmarks, nearbyAreas }: LocationPageProps) => {
