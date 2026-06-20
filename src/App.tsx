@@ -15,6 +15,7 @@ import Facilities from "./pages/Facilities";
 import AdminLogin from "./pages/AdminLogin";
 import { PerumburPage, VyasarpadiPage, MadhavaramPage } from "./pages/LocationPage";
 import NotFound from "./pages/NotFound";
+import Unsubscribe from "./pages/Unsubscribe";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
           <Route path="/locations/perambur" element={<PerumburPage />} />
           <Route path="/locations/vyasarpadi" element={<VyasarpadiPage />} />
           <Route path="/locations/madhavaram" element={<MadhavaramPage />} />
+          <Route path="/unsubscribe" element={<Unsubscribe />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />

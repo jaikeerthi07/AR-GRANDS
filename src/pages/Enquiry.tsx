@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import SEO from "@/components/SEO";
+import { supabase } from "@/integrations/supabase/client";
 
 const functionTypes = ["Wedding", "Reception", "Engagement", "Birthday Party", "Corporate Event", "Other"];
 const capacityOptions = ["50–100 Guests", "100–250 Guests"];
@@ -16,19 +17,60 @@ const Enquiry = () => {
     capacity: "",
     message: "",
   });
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.phone || !form.date || !form.functionType || !form.capacity) {
       toast({ title: "Please fill all required fields", variant: "destructive" });
       return;
     }
-    toast({ title: "Enquiry Submitted!", description: "We will contact you shortly to confirm your booking." });
-    setForm({ name: "", email: "", phone: "", date: "", time: "", functionType: "", capacity: "", message: "" });
+    setSubmitting(true);
+    const enquiryId = crypto.randomUUID();
+    const templateData = { ...form };
+
+    try {
+      // Always notify the venue
+      const adminPromise = supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "enquiry-notification",
+          idempotencyKey: `enquiry-admin-${enquiryId}`,
+          templateData,
+        },
+      });
+
+      // Confirm to customer only if they provided an email
+      const customerPromise = form.email
+        ? supabase.functions.invoke("send-transactional-email", {
+            body: {
+              templateName: "enquiry-confirmation",
+              recipientEmail: form.email,
+              idempotencyKey: `enquiry-customer-${enquiryId}`,
+              templateData,
+            },
+          })
+        : Promise.resolve({ error: null });
+
+      const [adminRes, customerRes] = await Promise.all([adminPromise, customerPromise]);
+      if (adminRes.error) throw adminRes.error;
+      if ((customerRes as any).error) throw (customerRes as any).error;
+
+      toast({ title: "Enquiry Submitted!", description: "We will contact you shortly to confirm your booking." });
+      setForm({ name: "", email: "", phone: "", date: "", time: "", functionType: "", capacity: "", message: "" });
+    } catch (err) {
+      console.error("Enquiry submission failed", err);
+      toast({
+        title: "Couldn't send enquiry",
+        description: "Please try again or call us at +91 94440 43451.",
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const inputClass = "w-full px-4 py-3 rounded-md border border-border bg-background text-foreground font-body text-sm focus:outline-none focus:ring-2 focus:ring-ring";
