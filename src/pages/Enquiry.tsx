@@ -138,9 +138,10 @@ const Enquiry = () => {
 
           <button
             type="submit"
-            className="w-full bg-primary text-primary-foreground py-3 rounded-md font-body text-sm tracking-widest uppercase hover:bg-primary/90 transition-colors"
+            disabled={submitting}
+            className="w-full bg-primary text-primary-foreground py-3 rounded-md font-body text-sm tracking-widest uppercase hover:bg-primary/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Submit Enquiry
+            {submitting ? "Sending…" : "Submit Enquiry"}
           </button>
         </form>
       </section>
