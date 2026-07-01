@@ -74,7 +74,7 @@ const Footer = () => (
               <span className="text-body text-sm leading-relaxed">No 5C/1, Sidco Main Rd, near TNEB, Kodungaiyur (East), Vivekananda Nagar, Chennai – 600118</span>
             </div>
             <a
-              href="https://wa.me/919444043451"
+              href="https://wa.me/919791165395"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 mt-2 px-5 py-2.5 rounded-sm bg-[#25D366] text-white hover:opacity-90 transition-opacity w-fit"
