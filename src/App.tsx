@@ -16,6 +16,7 @@ import AdminLogin from "./pages/AdminLogin";
 import { PerumburPage, VyasarpadiPage, MadhavaramPage } from "./pages/LocationPage";
 import NotFound from "./pages/NotFound";
 import Unsubscribe from "./pages/Unsubscribe";
+import QRPage from "./pages/QRPage";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/locations/vyasarpadi" element={<VyasarpadiPage />} />
           <Route path="/locations/madhavaram" element={<MadhavaramPage />} />
           <Route path="/unsubscribe" element={<Unsubscribe />} />
+          <Route path="/qr" element={<QRPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />

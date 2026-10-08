@@ -2,7 +2,8 @@ import HeroSlider from "@/components/HeroSlider";
 import SEO from "@/components/SEO";
 import { Link } from "react-router-dom";
 import { Users, Calendar, Utensils, Music, Sparkles, Heart, Award, Star } from "lucide-react";
-import aboutExterior from "@/assets/about-exterior.jpg.asset.json";
+import aboutExterior from "@/assets/about-exterior.jpg";
+import InteractiveAvatar from "@/components/InteractiveAvatar";
 
 const features = [
   { icon: Users, title: "50–250 Guests", desc: "Flexible halls for intimate gatherings to grand celebrations" },
@@ -31,6 +32,7 @@ const Index = () => (
       description="Premier wedding & banquet hall in Kodungaiyur, Perambur. AC halls for 50–250 guests, catering, parking, decor. Book your celebration today."
       path="/"
     />
+    <InteractiveAvatar />
     <HeroSlider />
 
     {/* About Section */}
@@ -58,7 +60,7 @@ const Index = () => (
           <div className="absolute -inset-4 border border-accent/40 rounded-sm hidden md:block" />
           <div className="relative overflow-hidden rounded-sm shadow-[var(--shadow-elegant)] group">
             <img
-              src={aboutExterior.url}
+              src={aboutExterior}
               alt="A.R Grand Marriage Hall Exterior in Kodungaiyur, Chennai"
               width={800}
               height={1000}

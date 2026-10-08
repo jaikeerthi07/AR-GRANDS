@@ -1,9 +1,9 @@
 import SEO from "@/components/SEO";
 import { ArrowUpDown, Car, Zap, Snowflake, DoorClosed, ChefHat } from "lucide-react";
-import facilityLiftAsset from "@/assets/facility-lift.jpg.asset.json";
+import facilityLiftAsset from "@/assets/facility-parking.jpg"; // Placeholder for missing asset
 import facilityParking from "@/assets/facility-parking.jpg";
 import facilityGenset from "@/assets/facility-genset.jpg";
-import facilityAcHallAsset from "@/assets/facility-ac-hall.jpg.asset.json";
+import facilityAcHallAsset from "@/assets/facility-parking.jpg"; // Placeholder for missing asset
 import facilityPrivateRoom from "@/assets/facility-private-room.jpg";
 import facilityKitchen from "@/assets/facility-kitchen.jpg";
 
@@ -13,7 +13,7 @@ const facilities = [
     title: "Lifts",
     description:
       "Modern passenger elevators provide easy and comfortable access to all floors of the venue, ensuring convenience for elderly guests and those with limited mobility.",
-    image: facilityLiftAsset.url,
+    image: facilityLiftAsset,
     alt: "Modern passenger lift at A.R Grand Marriage Hall",
   },
   {
@@ -37,7 +37,7 @@ const facilities = [
     title: "Fully Air-Conditioned Hall",
     description:
       "The entire hall is centrally air-conditioned, keeping every guest cool and comfortable in any season — perfect for Chennai weather.",
-    image: facilityAcHallAsset.url,
+    image: facilityAcHallAsset,
     alt: "Fully air-conditioned wedding hall interior",
   },
   {
@@ -75,9 +75,8 @@ const Facilities = () => (
         {facilities.map((f, i) => (
           <div
             key={f.title}
-            className={`grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center ${
-              i % 2 === 1 ? "lg:[&>*:first-child]:order-2" : ""
-            }`}
+            className={`grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center ${i % 2 === 1 ? "lg:[&>*:first-child]:order-2" : ""
+              }`}
           >
             <div className="rounded-lg overflow-hidden shadow-lg">
               <img

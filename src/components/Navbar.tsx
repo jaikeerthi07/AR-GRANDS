@@ -28,19 +28,17 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        transparent
-          ? "bg-transparent border-b border-transparent"
-          : "bg-background/90 backdrop-blur-md border-b border-border shadow-sm"
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${transparent
+        ? "bg-transparent border-b border-transparent"
+        : "bg-background/90 backdrop-blur-md border-b border-border shadow-sm"
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           <Link
             to="/"
-            className={`font-heading text-2xl md:text-3xl font-medium tracking-[0.15em] transition-colors duration-500 ${
-              transparent ? "text-cream" : "text-foreground"
-            }`}
+            className={`font-heading text-2xl md:text-3xl font-medium tracking-[0.15em] transition-colors duration-500 ${transparent ? "text-cream" : "text-foreground"
+              }`}
           >
             A.R <span className="gold-text">Grand</span>
           </Link>
@@ -53,13 +51,12 @@ const Navbar = () => {
                 <Link
                   key={link.to}
                   to={link.to}
-                  className={`link-underline font-body text-[11px] tracking-[0.3em] uppercase transition-colors duration-300 ${
-                    active
-                      ? "text-accent"
-                      : transparent
+                  className={`link-underline font-body text-[11px] tracking-[0.3em] uppercase transition-colors duration-300 ${active
+                    ? "text-accent"
+                    : transparent
                       ? "text-cream/85 hover:text-cream"
                       : "text-muted-foreground hover:text-foreground"
-                  }`}
+                    }`}
                 >
                   {link.label}
                 </Link>
@@ -88,9 +85,8 @@ const Navbar = () => {
                 key={link.to}
                 to={link.to}
                 onClick={() => setIsOpen(false)}
-                className={`block py-3 font-body text-xs tracking-[0.3em] uppercase ${
-                  location.pathname === link.to ? "text-accent font-semibold" : "text-muted-foreground"
-                }`}
+                className={`block py-3 font-body text-xs tracking-[0.3em] uppercase ${location.pathname === link.to ? "text-accent font-semibold" : "text-muted-foreground"
+                  }`}
               >
                 {link.label}
               </Link>
