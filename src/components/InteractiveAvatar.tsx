@@ -10,6 +10,7 @@ export default function InteractiveAvatar() {
     const navigate = useNavigate();
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     // Canvas Chroma Key Logic
     useEffect(() => {
@@ -68,23 +69,26 @@ export default function InteractiveAvatar() {
     // Route Awareness and Speech Synthesis
     useEffect(() => {
         const routeNarratives: Record<string, string> = {
-            "/": "Welcome to A.R. Grand. This is our magnificent front lobby and the heart of our venue. Here, you'll find elegant spaces perfectly suited for your grandest celebrations, blending modern luxury with timeless charm.",
-            "/gallery": "Step into our gallery. Take a moment to admire the visually stunning moments captured here. Each picture tells a story of joy, celebration, and perfection that could be a part of your own special day.",
-            "/facilities": "Let me show you our premium facilities. We offer spacious air-conditioned halls, luxurious dining areas, top-tier audio-visual equipment, and dedicated suites, all designed to ensure maximum comfort.",
-            "/events": "This is our Events page! Whether it's a grand wedding, a corporate gathering, or a joyful birthday party, A.R. Grand provides the perfect canvas. We tailor every detail to make sure your celebration is unforgettable.",
-            "/contact": "Need to get in touch? You're in the right place. Just fill out our contact form or reach out directly to our team. We're always here and ready to help you plan your dream event with us.",
-            "/enquiry": "Ready to book your dream venue? Send us an enquiry and our team will get back to you promptly with all the details you need to make your celebration a reality.",
-            "/terms": "Here are our terms and conditions. We believe in complete transparency to ensure a smooth and trusted experience for all our guests.",
-            "/admin": "Welcome to the admin portal. Please log in to manage bookings, view inquiries, and handle the venue operations.",
-            "/locations/perambur": "Discover our accessible locations. A.R. Grand in Perambur is situated at prime spots to ensure ease of access for all your guests.",
-            "/locations/vyasarpadi": "Discover our accessible locations. Our Vyasarpadi location ensures absolute ease of access for all your guests.",
-            "/locations/madhavaram": "Discover our accessible locations. Located centrally in Madhavaram to make travel convenient for everyone."
+            "/": "Welcome to A.R. Grand. This is our magnificent front lobby and the very heart of our venue. Here, you will find incredibly elegant spaces perfectly suited for your grandest celebrations, blending the absolute best of modern luxury with timeless charm. Take a moment to look around at our stunning architectural details and experience the warm, welcoming atmosphere we have cultivated just for you.",
+            "/gallery": "Step into our gallery. Here you can see beautiful photos of our marriage hall exterior, elegant wedding stage decorations, the grand entrance, various views of our fully seated hall, and our lift and staircase access.",
+            "/facilities": "Let me show you our premium facilities. We have modern passenger lifts, spacious car parking, power backup generator sets, a fully air-conditioned hall, elegantly furnished private rooms, and a separate commercial cooking area for your caterers.",
+            "/events": "This is our Events page! Here you can check available dates and scheduled bookings for various events like weddings, receptions, and corporate gatherings. You can also easily add a new booking to reserve your preferred date.",
+            "/contact": "Need to get in touch with us? You are in the exact right place. Just fill out our highly responsive contact form or reach out directly to our friendly support team via phone or email. We are always here and fully ready to help you plan and execute your dream event with us.",
+            "/enquiry": "Ready to officially book your dream venue with us? Send us a detailed enquiry right here and our highly professional event management team will get back to you promptly with all the extensive details, pricing, and availability you need to make your grand celebration a striking reality.",
+            "/terms": "Here are our complete terms and conditions which cover seven main sections. First, Booking and Reservation, requiring a fifty percent advance. Second, Cancellation and Refund policies. Third, Venue Usage rules and overtime policies. Fourth, Capacity and Safety guidelines, including our strict no indoor fireworks policy. Fifth, Noise and Conduct rules ensuring music stops by 10 PM. Sixth, Parking and Liability details regarding our complimentary parking. And finally, General terms of agreement. Please read through carefully to ensure a smooth experience.",
+            "/admin": "Welcome to the secure admin portal. Please securely log in with your verified credentials to closely manage real-time bookings, comprehensively view user inquiries, and smoothly handle all internal venue operations and logistics.",
+            "/locations/perambur": "Discover our highly accessible premier locations. A.R. Grand in Perambur is strategically situated right at the prime spot of the city center to ensure absolute ease of access and hassle-free commuting for all of your esteemed guests.",
+            "/locations/vyasarpadi": "Discover our beautifully situated Vyasarpadi location. It offers an incredible blend of local charm and absolute urban ease of access, ensuring all your guests arrive perfectly on time with minimal effort.",
+            "/locations/madhavaram": "Discover our fantastic Madhavaram branch. Located incredibly centrally with brilliant local connections in Madhavaram to make travel highly convenient, breezy, and pleasant for absolutely everyone attending."
         };
 
         const textToSpeak = routeNarratives[location.pathname] || "Welcome to A.R. Grand! Explore our venue and discover the perfect space for your next grand celebration.";
         setCurrentText(textToSpeak);
 
-        window.speechSynthesis.cancel();
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+        }
         if (videoRef.current) videoRef.current.playbackRate = 1.0;
 
         const isFirstLoad = !sessionStorage.getItem('avatarVoiceInitialized');
@@ -92,33 +96,38 @@ export default function InteractiveAvatar() {
 
         const executeAvatarSpeech = () => {
             sessionStorage.setItem('avatarVoiceInitialized', 'true');
-            setStage("speaking");
+            // Do not arbitrarily set "speaking" here; wait for audio promise below.
 
             if (!isMuted) {
-                const utterance = new SpeechSynthesisUtterance(textToSpeak);
-
-                const populateAndSpeak = () => {
-                    const voices = window.speechSynthesis.getVoices();
-                    const preferredVoice = voices.find(v => v.lang.includes('en-IN') || v.lang.includes('en-GB') || v.lang.includes('en-US'));
-                    if (preferredVoice) utterance.voice = preferredVoice;
-
-                    utterance.rate = 0.95;
-                    utterance.pitch = 1.1; // Slightly higher pitch for the "baby" voice
-
-                    utterance.onend = () => setStage("waiting");
-                    utterance.onerror = () => setStage("waiting");
-
-                    window.speechSynthesis.speak(utterance);
+                const routeAudioMap: Record<string, string> = {
+                    "/": "/audio/home.mp3",
+                    "/gallery": "/audio/gallery.mp3",
+                    "/facilities": "/audio/facilities.mp3",
+                    "/events": "/audio/events.mp3",
+                    "/contact": "/audio/contact.mp3",
+                    "/enquiry": "/audio/enquiry.mp3",
+                    "/terms": "/audio/terms.mp3",
+                    "/admin": "/audio/admin.mp3",
+                    "/locations/perambur": "/audio/perambur.mp3",
+                    "/locations/vyasarpadi": "/audio/vyasarpadi.mp3",
+                    "/locations/madhavaram": "/audio/madhavaram.mp3"
                 };
+                const audioFileToPlay = routeAudioMap[location.pathname] || "/audio/home.mp3";
 
-                if (window.speechSynthesis.getVoices().length === 0) {
-                    window.speechSynthesis.onvoiceschanged = () => {
-                        populateAndSpeak();
-                        window.speechSynthesis.onvoiceschanged = null;
-                    };
-                } else {
-                    populateAndSpeak();
-                }
+                const audio = new Audio(audioFileToPlay);
+                audioRef.current = audio;
+
+                audio.onended = () => setStage("waiting");
+                audio.onerror = () => setStage("waiting");
+
+                audio.play().then(() => {
+                    setStage("speaking");
+                }).catch(e => {
+                    console.error("Audio play blocked", e);
+                    setCurrentText("👋 Autoplay was blocked by your browser! Please tap the Unmute button below to hear my genuine boy voice.");
+                    setIsMuted(true);
+                    setStage("waiting");
+                });
             } else {
                 setTimeout(() => setStage("waiting"), 3000);
             }
@@ -142,12 +151,12 @@ export default function InteractiveAvatar() {
                 window.removeEventListener('preloaderFinished', handlePreloaderComplete);
             }
             clearTimeout(enterTimer);
-            window.speechSynthesis.cancel();
+            if (audioRef.current) { audioRef.current.pause(); audioRef.current.currentTime = 0; }
         };
     }, [location.pathname, isMuted]);
 
     const handleDismiss = () => {
-        window.speechSynthesis.cancel();
+        if (audioRef.current) { audioRef.current.pause(); audioRef.current.currentTime = 0; }
         setStage("rejected");
         if (videoRef.current) {
             videoRef.current.playbackRate = 0.85;
@@ -156,18 +165,29 @@ export default function InteractiveAvatar() {
 
     const toggleMute = () => {
         if (!isMuted) {
-            window.speechSynthesis.cancel();
+            if (audioRef.current) { audioRef.current.pause(); audioRef.current.currentTime = 0; }
             setStage("waiting");
         } else {
-            const utterance = new SpeechSynthesisUtterance(currentText);
-            const voices = window.speechSynthesis.getVoices();
-            const preferredVoice = voices.find(v => v.lang.includes('en-IN') || v.lang.includes('en-GB') || v.lang.includes('en-US'));
-            if (preferredVoice) utterance.voice = preferredVoice;
-            utterance.rate = 0.95;
-            utterance.pitch = 1.1;
-            utterance.onend = () => setStage("waiting");
-            window.speechSynthesis.speak(utterance);
-            setStage("speaking");
+            const routeAudioMap: Record<string, string> = {
+                "/": "/audio/home.mp3",
+                "/gallery": "/audio/gallery.mp3",
+                "/facilities": "/audio/facilities.mp3",
+                "/events": "/audio/events.mp3",
+                "/contact": "/audio/contact.mp3",
+                "/enquiry": "/audio/enquiry.mp3",
+                "/terms": "/audio/terms.mp3",
+                "/admin": "/audio/admin.mp3",
+                "/locations/perambur": "/audio/perambur.mp3",
+                "/locations/vyasarpadi": "/audio/vyasarpadi.mp3",
+                "/locations/madhavaram": "/audio/madhavaram.mp3"
+            };
+            const audioFileToPlay = routeAudioMap[location.pathname] || "/audio/home.mp3";
+
+            const audio = new Audio(audioFileToPlay);
+            audioRef.current = audio;
+            audio.onended = () => setStage("waiting");
+            audio.onerror = () => setStage("waiting");
+            audio.play().then(() => setStage("speaking")).catch(e => setStage("waiting"));
         }
         setIsMuted(!isMuted);
     };
@@ -178,7 +198,7 @@ export default function InteractiveAvatar() {
         "/facilities": { label: "Discover Events 🎉", action: () => navigate('/events') },
         "/events": {
             label: "Open Google Maps 📍", action: () => {
-                window.speechSynthesis.cancel();
+                if (audioRef.current) { audioRef.current.pause(); audioRef.current.currentTime = 0; }
                 window.open("https://www.google.com/maps/search/?api=1&query=AR+GRANDS,+Chennai", "_blank");
             }
         }

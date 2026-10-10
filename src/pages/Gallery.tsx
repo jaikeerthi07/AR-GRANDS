@@ -53,7 +53,7 @@ const Gallery = () => {
       </section>
 
       <section className="px-4 md:px-8 lg:px-16 pb-24 max-w-7xl mx-auto">
-        <div className="grid grid-cols-2 lg:grid-cols-4 auto-rows-[220px] gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 auto-rows-[220px] gap-4 grid-flow-dense">
           {images.map((img, i) => (
             <button
               key={i}
@@ -69,9 +69,8 @@ const Gallery = () => {
                 height={600}
                 loading="lazy"
                 onLoad={() => setLoaded((prev) => ({ ...prev, [i]: true }))}
-                className={`absolute inset-0 w-full h-full object-cover transition-all duration-1000 group-hover:scale-110 ${
-                  loaded[i] ? "opacity-100" : "opacity-0"
-                }`}
+                className={`absolute inset-0 w-full h-full object-cover transition-all duration-1000 group-hover:scale-110 ${loaded[i] ? "opacity-100" : "opacity-0"
+                  }`}
               />
               {/* Hover overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-noir/85 via-noir/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

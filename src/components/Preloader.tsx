@@ -59,9 +59,8 @@ export default function Preloader() {
                     <img
                         src="/ar grand.png"
                         alt="AR Grand Logo"
-                        className="w-auto h-[40vh] md:h-[60vh] object-contain mix-blend-multiply mb-8 animate-[float_4s_ease-in-out_infinite]"
+                        className="absolute inset-0 w-full h-full object-cover mix-blend-multiply scale-105 z-[-1]"
                     />
-                    <div className="h-0.5 bg-gradient-to-r from-transparent via-gold to-transparent opacity-0 animate-[fade-in_2s_ease-out_0.5s_forwards] w-64 md:w-96"></div>
                     <p className="mt-4 font-heading text-xl md:text-2xl text-noir tracking-[0.2em] opacity-0 animate-[fade-in_2s_ease-out_1s_forwards] font-light">
                         WHERE FOREVER BEGINS
                     </p>
@@ -75,15 +74,15 @@ export default function Preloader() {
                         }`}
                 >
                     {/* The mix-blend-multiply removes the solid white background of the video, creating the illusion of a pure animation rather than an MP4 player! */}
-                    <div className="relative flex flex-col items-center justify-center">
+                    <div className="relative flex flex-col items-center justify-center w-full h-full">
                         <video
                             ref={videoRef}
                             src="/boy girl animation.mp4"
                             muted
                             playsInline
-                            className="w-auto h-[75vh] md:h-[85vh] object-contain mix-blend-multiply drop-shadow-2xl"
+                            className="absolute inset-0 w-full h-full object-cover mix-blend-multiply z-[-1]"
                         />
-                        <p className="font-heading italic text-3xl md:text-4xl text-gold-deep blur-[0.5px] mt-4 opacity-0 animate-[fade-in_2s_ease-out_forwards]">Together Forever</p>
+                        <p className="font-heading italic text-3xl md:text-4xl text-gold-deep blur-[0.5px] mt-4 opacity-0 animate-[fade-in_2s_ease-out_forwards] z-10">Together Forever</p>
                     </div>
                 </div>
 

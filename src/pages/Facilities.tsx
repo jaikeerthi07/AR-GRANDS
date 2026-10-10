@@ -1,9 +1,9 @@
 import SEO from "@/components/SEO";
 import { ArrowUpDown, Car, Zap, Snowflake, DoorClosed, ChefHat } from "lucide-react";
-import facilityLiftAsset from "@/assets/facility-parking.jpg"; // Placeholder for missing asset
+import facilityLiftAsset from "@/assets/gallery-10.jpg";
 import facilityParking from "@/assets/facility-parking.jpg";
 import facilityGenset from "@/assets/facility-genset.jpg";
-import facilityAcHallAsset from "@/assets/facility-parking.jpg"; // Placeholder for missing asset
+import facilityAcHallAsset from "@/assets/gallery-8.jpg";
 import facilityPrivateRoom from "@/assets/facility-private-room.jpg";
 import facilityKitchen from "@/assets/facility-kitchen.jpg";
 
