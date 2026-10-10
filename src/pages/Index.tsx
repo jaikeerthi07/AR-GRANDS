@@ -3,7 +3,6 @@ import SEO from "@/components/SEO";
 import { Link } from "react-router-dom";
 import { Users, Calendar, Utensils, Music, Sparkles, Heart, Award, Star } from "lucide-react";
 import aboutExterior from "@/assets/about-exterior.jpg";
-import InteractiveAvatar from "@/components/InteractiveAvatar";
 
 const features = [
   { icon: Users, title: "50–250 Guests", desc: "Flexible halls for intimate gatherings to grand celebrations" },
@@ -32,7 +31,6 @@ const Index = () => (
       description="Premier wedding & banquet hall in Kodungaiyur, Perambur. AC halls for 50–250 guests, catering, parking, decor. Book your celebration today."
       path="/"
     />
-    <InteractiveAvatar />
     <HeroSlider />
 
     {/* About Section */}
@@ -65,7 +63,7 @@ const Index = () => (
               width={800}
               height={1000}
               loading="lazy"
-              className="w-full h-[480px] lg:h-[600px] object-cover transition-transform duration-[2000ms] group-hover:scale-105"
+              className="w-full h-[480px] lg:h-[600px] object-cover transition-transform duration-1000 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-noir/40 via-transparent to-transparent" />
           </div>
