@@ -7,6 +7,7 @@ const navLinks = [
   { to: "/gallery", label: "Gallery" },
   { to: "/events", label: "Events" },
   { to: "/facilities", label: "Facilities" },
+  { to: "/qr-scan", label: "QR Scan" },
   { to: "/contact", label: "Contact" },
   { to: "/terms", label: "Terms" },
 ];
@@ -14,6 +15,7 @@ const navLinks = [
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isRevealed, setIsRevealed] = useState(() => !!sessionStorage.getItem("ar_grand_site_loaded"));
   const location = useLocation();
   const onHome = location.pathname === "/";
 
@@ -21,16 +23,24 @@ const Navbar = () => {
     const onScroll = () => setScrolled(window.scrollY > 40);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+
+    const handlePreloaderDone = () => setIsRevealed(true);
+    window.addEventListener("preloaderFinished", handlePreloaderDone);
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("preloaderFinished", handlePreloaderDone);
+    };
   }, []);
 
   const transparent = onHome && !scrolled && !isOpen;
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${transparent
-        ? "bg-transparent border-b border-transparent"
-        : "bg-background/90 backdrop-blur-md border-b border-border shadow-sm"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ease-out ${isRevealed ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-8 pointer-events-none"
+        } ${transparent
+          ? "bg-transparent border-b border-transparent"
+          : "bg-background/90 backdrop-blur-md border-b border-border shadow-sm"
         }`}
     >
       <div className="max-w-7xl mx-auto px-4 md:px-8">

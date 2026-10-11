@@ -24,6 +24,7 @@ const MadhavaramPage = lazy(() => import("./pages/LocationPage").then(m => ({ de
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 const QRPage = lazy(() => import("./pages/QRPage"));
+const QRScan = lazy(() => import("./pages/QRScan"));
 
 // Global Cache Optimization
 const queryClient = new QueryClient({
@@ -58,7 +59,8 @@ const App = () => (
             <Route path="/locations/vyasarpadi" element={<VyasarpadiPage />} />
             <Route path="/locations/madhavaram" element={<MadhavaramPage />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
-            <Route path="/qr" element={<QRPage />} />
+            <Route path="/qr-scan" element={<QRScan />} />
+            <Route path="/qr" element={<QRScan />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
