@@ -31,10 +31,10 @@ const Index = () => (
       description="Premier wedding & banquet hall in Kodungaiyur, Perambur. AC halls for 50–250 guests, catering, parking, decor. Book your celebration today."
       path="/"
     />
-    <HeroSlider />
+    <div data-section="hero"><HeroSlider /></div>
 
     {/* About Section */}
-    <section className="section-padding max-w-7xl mx-auto">
+    <section data-section="about" className="section-padding max-w-7xl mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         <div className="order-2 lg:order-1">
           <p className="eyebrow mb-4">Welcome to A.R Grand</p>
@@ -82,7 +82,7 @@ const Index = () => (
     </section>
 
     {/* Stats Strip */}
-    <section className="relative py-16 noir-bg overflow-hidden">
+    <section data-section="stats" className="relative py-16 noir-bg overflow-hidden">
       <div className="absolute inset-0 opacity-10" style={{ background: "var(--gradient-gold)" }} />
       <div className="relative max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-2 lg:grid-cols-4 gap-y-10">
         {stats.map((s) => (
@@ -95,7 +95,7 @@ const Index = () => (
     </section>
 
     {/* Features */}
-    <section className="section-padding bg-card">
+    <section data-section="features" className="section-padding bg-card">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <p className="eyebrow mb-3">Our Promise</p>
@@ -119,7 +119,7 @@ const Index = () => (
     </section>
 
     {/* Virtual Tour Video */}
-    <section className="section-padding max-w-7xl mx-auto">
+    <section data-section="tour" className="section-padding max-w-7xl mx-auto">
       <div className="text-center mb-12">
         <p className="eyebrow mb-3">Step Inside</p>
         <span className="gold-divider mb-6" />
@@ -144,7 +144,7 @@ const Index = () => (
     </section>
 
     {/* Testimonials */}
-    <section className="section-padding bg-card">
+    <section data-section="testimonials" className="section-padding bg-card">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <p className="eyebrow mb-3">Kind Words</p>
@@ -169,7 +169,7 @@ const Index = () => (
     </section>
 
     {/* CTA */}
-    <section className="relative section-padding noir-bg overflow-hidden text-center">
+    <section data-section="cta" className="relative section-padding noir-bg overflow-hidden text-center">
       <div className="absolute inset-0 opacity-[0.07]" style={{ background: "var(--gradient-gold)" }} />
       <Sparkles className="absolute top-12 left-12 text-accent/30 hidden md:block" size={28} />
       <Heart className="absolute bottom-12 right-12 text-accent/30 hidden md:block" size={28} />

@@ -3,10 +3,10 @@ import { template as enquiryConfirmation } from './enquiry-confirmation.tsx'
 import { template as enquiryNotification } from './enquiry-notification.tsx'
 
 export interface TemplateEntry {
-  component: ComponentType<any>
-  subject: string | ((data: any) => string)
+  component: ComponentType<unknown>
+  subject: string | ((data: unknown) => string)
   displayName?: string
-  previewData?: Record<string, any>
+  previewData?: Record<string, unknown>
   to?: string
 }
 

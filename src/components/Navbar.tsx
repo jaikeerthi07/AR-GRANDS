@@ -7,7 +7,6 @@ const navLinks = [
   { to: "/gallery", label: "Gallery" },
   { to: "/events", label: "Events" },
   { to: "/facilities", label: "Facilities" },
-  { to: "/qr-scan", label: "QR Scan" },
   { to: "/contact", label: "Contact" },
   { to: "/terms", label: "Terms" },
 ];

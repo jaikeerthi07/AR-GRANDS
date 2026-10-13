@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
+import { Phone, Mail, MapPin, MessageCircle, ExternalLink } from "lucide-react";
 import SocialLinks from "@/components/SocialLinks";
 
 const Footer = () => (
@@ -60,18 +60,38 @@ const Footer = () => (
           <div className="flex flex-col gap-4">
             <div className="flex items-start gap-3 text-cream/75">
               <Phone size={16} className="mt-1 shrink-0 text-accent" />
-              <div className="text-body text-sm">
-                <p>+91 94440 43451</p>
-                <p>+91 97911 65395</p>
+              <div className="text-body text-sm flex flex-col gap-0.5">
+                <a href="tel:+919444043451" className="hover:text-accent transition-colors w-fit">
+                  +91 94440 43451
+                </a>
+                <a href="tel:+919791165395" className="hover:text-accent transition-colors w-fit">
+                  +91 97911 65395
+                </a>
               </div>
             </div>
             <div className="flex items-start gap-3 text-cream/75">
               <Mail size={16} className="mt-1 shrink-0 text-accent" />
-              <span className="text-body text-sm">info@argrand.com</span>
+              <a href="mailto:info@argrand.com" className="text-body text-sm hover:text-accent transition-colors w-fit">
+                info@argrand.com
+              </a>
             </div>
             <div className="flex items-start gap-3 text-cream/75">
               <MapPin size={16} className="mt-1 shrink-0 text-accent" />
-              <span className="text-body text-sm leading-relaxed">No 5C/1, Sidco Main Rd, near TNEB, Kodungaiyur (East), Vivekananda Nagar, Chennai – 600118</span>
+              <a
+                href="https://www.google.com/maps/search/?api=1&query=AR+Grands,+No+5C%2F1,+Sidco+Main+Rd,+near+TNEB,+Kodungaiyur+(East),+Vivekananda+Nagar,+Chennai+-+600118"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-accent transition-colors group flex flex-col gap-1"
+                title="Open A.R Grand in Google Maps"
+              >
+                <span className="text-body text-sm leading-relaxed">
+                  No 5C/1, Sidco Main Rd, near TNEB, Kodungaiyur (East), Vivekananda Nagar, Chennai – 600118
+                </span>
+                <span className="inline-flex items-center gap-1 text-xs text-accent font-semibold group-hover:underline w-fit">
+                  <span>📍 View on Google Maps</span>
+                  <ExternalLink size={12} />
+                </span>
+              </a>
             </div>
             <a
               href="https://wa.me/919791165395"

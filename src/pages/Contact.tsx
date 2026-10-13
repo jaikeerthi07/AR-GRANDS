@@ -24,7 +24,16 @@ const Contact = () => (
             </div>
             <div>
               <h3 className="font-heading text-xl text-foreground mb-1">Address</h3>
-              <p className="text-body text-muted-foreground">No 5C/1, Sidco Main Rd, near TNEB, Kodungaiyur (East), Vivekananda Nagar, Kodungaiyur, Chennai, Tamil Nadu 600118</p>
+              <a
+                href="https://www.google.com/maps/search/?api=1&query=AR+Grands,+No+5C%2F1,+Sidco+Main+Rd,+near+TNEB,+Kodungaiyur+(East),+Vivekananda+Nagar,+Chennai+-+600118"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-body text-muted-foreground hover:text-primary transition-colors block leading-relaxed"
+                title="Open in Google Maps"
+              >
+                No 5C/1, Sidco Main Rd, near TNEB, Kodungaiyur (East), Vivekananda Nagar, Kodungaiyur, Chennai, Tamil Nadu 600118
+                <span className="text-xs text-primary font-semibold block mt-1">📍 Open in Google Maps →</span>
+              </a>
             </div>
           </div>
           <div className="flex items-start gap-4">
@@ -33,8 +42,10 @@ const Contact = () => (
             </div>
             <div>
               <h3 className="font-heading text-xl text-foreground mb-1">Phone</h3>
-              <p className="text-body text-muted-foreground">+91 94440 43451</p>
-              <p className="text-body text-muted-foreground">+91 97911 65395</p>
+              <p className="text-body text-muted-foreground">
+                <a href="tel:+919444043451" className="hover:text-primary transition-colors block">+91 94440 43451</a>
+                <a href="tel:+919791165395" className="hover:text-primary transition-colors block mt-0.5">+91 97911 65395</a>
+              </p>
             </div>
           </div>
           <div className="flex items-start gap-4">
@@ -43,8 +54,10 @@ const Contact = () => (
             </div>
             <div>
               <h3 className="font-heading text-xl text-foreground mb-1">Email</h3>
-              <p className="text-body text-muted-foreground">info@argrand.com</p>
-              <p className="text-body text-muted-foreground">bookings@argrand.com</p>
+              <p className="text-body text-muted-foreground">
+                <a href="mailto:info@argrand.com" className="hover:text-primary transition-colors block">info@argrand.com</a>
+                <a href="mailto:bookings@argrand.com" className="hover:text-primary transition-colors block mt-0.5">bookings@argrand.com</a>
+              </p>
             </div>
           </div>
           <div className="flex items-start gap-4">

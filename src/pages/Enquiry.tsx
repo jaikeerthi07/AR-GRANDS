@@ -57,7 +57,8 @@ const Enquiry = () => {
 
       const [adminRes, customerRes] = await Promise.all([adminPromise, customerPromise]);
       if (adminRes.error) throw adminRes.error;
-      if ((customerRes as any).error) throw (customerRes as any).error;
+      const customerError = (customerRes as { error?: unknown }).error;
+      if (customerError) throw customerError;
 
       toast({ title: "Enquiry Submitted!", description: "We will contact you shortly to confirm your booking." });
       setForm({ name: "", email: "", phone: "", date: "", time: "", functionType: "", capacity: "", message: "" });

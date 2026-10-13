@@ -4,14 +4,23 @@ import hero2 from "@/assets/hero-2.jpg";
 import aboutExterior from "@/assets/about-exterior.jpg";
 
 export default function Preloader() {
+    const isQRRoute = typeof window !== "undefined" && window.location.pathname.startsWith("/qr");
     const [progress, setProgress] = useState(0);
     const [isHiding, setIsHiding] = useState(false);
-    const [isHidden, setIsHidden] = useState(false);
+    const [isHidden, setIsHidden] = useState(() => isQRRoute || (typeof window !== "undefined" && !!sessionStorage.getItem("ar_grand_site_loaded")));
     const [statusText, setStatusText] = useState("Preparing experience...");
     const targetProgressRef = useRef(0);
     const allReadyRef = useRef(false);
 
     useEffect(() => {
+        // Bypass if accessing /qr-scan or /qr route
+        if (window.location.pathname.startsWith("/qr")) {
+            setIsHidden(true);
+            document.body.classList.add("site-ready");
+            window.dispatchEvent(new Event("preloaderFinished"));
+            return;
+        }
+
         // Prevent preloader from running repeatedly in the same session
         const alreadyLoaded = sessionStorage.getItem("ar_grand_site_loaded");
         if (alreadyLoaded) {
@@ -80,7 +89,7 @@ export default function Preloader() {
 
             // Allowed progress is constrained by actual assets loaded
             // It can only reach 100% if all assets have truly completed
-            let target = allReadyRef.current && elapsed >= minDuration
+            const target = allReadyRef.current && elapsed >= minDuration
                 ? 100
                 : Math.min(targetProgressRef.current, timePacing);
 
@@ -121,51 +130,31 @@ export default function Preloader() {
                 }`}
             style={{ backdropFilter: isHiding ? "none" : "blur(8px)" }}
         >
-            <div className="relative flex flex-col items-center justify-center max-w-sm w-full px-6 text-center select-none">
+            <div className="relative flex flex-col items-center justify-center w-full max-w-md px-6 text-center select-none">
 
-                {/* Small Transparent Couple Animation */}
-                <div className="relative mb-5 flex items-center justify-center">
-                    {/* Subtle warm luxury glow behind transparent couple */}
-                    <div className="absolute w-32 h-32 rounded-full bg-[hsl(var(--gold)/0.12)] blur-2xl pointer-events-none animate-pulse" />
+                {/* Staged Wedding Couple Vector Animation */}
+                <div className="relative flex items-center justify-center w-full max-w-[280px] md:max-w-[340px] aspect-[4/5]">
+                    {/* Subtle warm luxury ambient backdrop glow */}
+                    <div className="absolute w-48 h-48 rounded-full bg-[hsl(var(--gold)/0.12)] blur-3xl pointer-events-none animate-pulse" />
 
+                    {/* Animated Wedding Couple SVG */}
                     <img
-                        src="/couple-loader.webp"
-                        alt="A.R. Grand Animation"
-                        className="relative z-10 w-28 md:w-36 h-auto object-contain pointer-events-none select-none"
+                        src="/wedding-couple.svg"
+                        alt="AR Grands Wedding Couple"
+                        className="relative z-10 w-full h-full object-contain pointer-events-none select-none drop-shadow-[0_10px_25px_rgba(0,0,0,0.06)]"
                     />
                 </div>
 
-                {/* Brand Title */}
-                <h1 className="font-heading text-lg md:text-xl font-bold tracking-[0.25em] text-neutral-800 uppercase mb-1">
-                    A.R. GRAND
-                </h1>
-                <p className="font-heading italic text-xs md:text-sm text-gold-deep mb-5 tracking-wide">
-                    Where Forever Begins
-                </p>
-
-                {/* 0 to 100% Counter & Progress Bar */}
-                <div className="w-full flex flex-col items-center gap-2.5">
-                    {/* Numerical Percentage */}
-                    <div className="flex items-baseline justify-center font-heading font-bold text-2xl md:text-3xl text-neutral-800 tracking-wider">
-                        <span>{progress}</span>
-                        <span className="text-sm md:text-base text-gold ml-1 font-semibold">%</span>
-                    </div>
-
-                    {/* Sleek Golden Progress Track */}
-                    <div className="w-44 md:w-56 h-1.5 bg-neutral-100 border border-neutral-200/60 rounded-full overflow-hidden shadow-inner relative">
-                        <div
-                            className="h-full bg-gradient-to-r from-amber-200 via-gold to-amber-500 rounded-full transition-all duration-75 ease-out shadow-[0_0_10px_rgba(212,175,55,0.7)]"
-                            style={{ width: `${progress}%` }}
-                        />
-                    </div>
-
-                    {/* Dynamic Status / Readiness Indicator */}
-                    <p className="text-[10px] uppercase tracking-[0.2em] text-neutral-400 font-medium mt-1 transition-all duration-300">
-                        {statusText}
-                    </p>
+                {/* Minimalist Elegant Loading Progress Line (No text or prompt clutter) */}
+                <div className="w-32 md:w-44 h-[2px] bg-neutral-100 rounded-full overflow-hidden mt-4 opacity-80">
+                    <div
+                        className="h-full bg-gradient-to-r from-amber-200 via-gold to-amber-500 rounded-full transition-all duration-100 ease-out shadow-[0_0_8px_rgba(212,175,55,0.6)]"
+                        style={{ width: `${progress}%` }}
+                    />
                 </div>
 
             </div>
         </div>
     );
 }
+

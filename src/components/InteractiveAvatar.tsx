@@ -1,124 +1,151 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Volume2, VolumeX, X } from "lucide-react";
+import { Volume2, VolumeX, X, Sparkles } from "lucide-react";
 
 interface RouteAvatarConfig {
     videoSrc: string;
-    audioSrc: string;
+    audioSrc?: string;
     text: string;
+    preferSpeechSynthesis?: boolean;
 }
 
-const routeAvatarConfigs: Record<string, RouteAvatarConfig> = {
-    "/": {
-        videoSrc: "/avatar-home.mp4", // Front-facing talking and welcoming gesture
-        audioSrc: "/audio/home.mp3",
-        text: "Welcome to A.R. Grand! ✨ Explore our luxury wedding halls."
-    },
-    "/gallery": {
-        videoSrc: "/avatar-gallery.mp4", // Walking stroll motion (left to right)
-        audioSrc: "/audio/gallery.mp3",
-        text: "Browse photos of our grand stage, halls & decor 📸"
-    },
-    "/facilities": {
-        videoSrc: "/avatar-dance.mp4", // Energetic celebration dance & crouch jump
-        audioSrc: "/audio/facilities.mp3",
-        text: "Discover our AC halls, guest suites, lifts & parking 🏨"
-    },
-    "/events": {
-        videoSrc: "/avatar-events.mp4", // Forward turn & cheerful entrance greeting
-        audioSrc: "/audio/events.mp3",
-        text: "Check available dates & schedule your celebration 📅"
-    },
-    "/contact": {
-        videoSrc: "/avatar-contact.mp4", // Walking stroll in reverse direction (right to left)
-        audioSrc: "/audio/contact.mp3",
-        text: "Get in touch with us to plan your special day 📞"
-    },
-    "/enquiry": {
-        videoSrc: "/avatar-home.mp4",
-        audioSrc: "/audio/enquiry.mp3",
-        text: "Ready to book? Share your event details with us 💌"
-    },
-    "/admin": {
-        videoSrc: "/avatar-home.mp4",
-        audioSrc: "/audio/admin.mp3",
-        text: "Admin portal — manage bookings & venue operations 🔐"
-    },
-    "/locations/perambur": {
-        videoSrc: "/avatar-home.mp4",
-        audioSrc: "/audio/perambur.mp3",
-        text: "A.R. Grand Perambur — accessible city center 📍"
-    },
-    "/locations/vyasarpadi": {
-        videoSrc: "/avatar-home.mp4",
-        audioSrc: "/audio/vyasarpadi.mp3",
-        text: "A.R. Grand Vyasarpadi — convenient & elegant 📍"
-    },
-    "/locations/madhavaram": {
-        videoSrc: "/avatar-home.mp4",
-        audioSrc: "/audio/madhavaram.mp3",
-        text: "A.R. Grand Madhavaram — central connectivity 📍"
-    }
+type AvatarConfig = RouteAvatarConfig & {
+    tourLink?: { label: string; action: () => void };
 };
+
+// 14+ Distinct Video Motion Files to break similarity across every tab and scroll state
+const routeAvatarConfigs: Record<string, RouteAvatarConfig> = {
+    "/": { videoSrc: "/avatar-welcome.mp4", audioSrc: "/audio/home.mp3", text: "Welcome to A.R. Grand. Explore our luxury wedding halls.", preferSpeechSynthesis: true },
+    "/gallery": { videoSrc: "/avatar-gallery.mp4", audioSrc: "/audio/gallery.mp3", text: "Browse photos of our grand stage, halls, and decor." },
+    "/facilities": { videoSrc: "/avatar-dance-jump.mp4", audioSrc: "/audio/facilities.mp3", text: "Discover our air-conditioned halls, guest suites, lifts, and parking." },
+    "/events": { videoSrc: "/avatar-events.mp4", audioSrc: "/audio/events.mp3", text: "Check available dates and plan your celebration." },
+    "/contact": { videoSrc: "/avatar-contact.mp4", audioSrc: "/audio/contact.mp3", text: "Get in touch with us to plan your special day." },
+    "/enquiry": { videoSrc: "/avatar-approach.mp4", audioSrc: "/audio/enquiry.mp3", text: "Ready to book? Share your event details with us." },
+    "/admin": { videoSrc: "/avatar-calm-nod.mp4", audioSrc: "/audio/admin.mp3", text: "Admin portal for managing bookings and venue operations." },
+    "/locations/perambur": { videoSrc: "/avatar-welcome.mp4", audioSrc: "/audio/perambur.mp3", text: "A.R. Grand Perambur is in an accessible city-centre location." },
+    "/locations/vyasarpadi": { videoSrc: "/avatar-walk-and-turn.mp4", audioSrc: "/audio/vyasarpadi.mp3", text: "A.R. Grand Vyasarpadi is convenient and elegant." },
+    "/locations/madhavaram": { videoSrc: "/avatar-dance-groove.mp4", audioSrc: "/audio/madhavaram.mp3", text: "A.R. Grand Madhavaram offers excellent local connectivity." }
+};
+
+// Uses the closest available youthful male voice. Exact voices vary by browser/OS.
+function assignYoungBoyVoice(utterance: SpeechSynthesisUtterance, voices: SpeechSynthesisVoice[]) {
+    utterance.pitch = 1.3;
+    utterance.rate = 0.94;
+    utterance.volume = 1.0;
+    const boyVoice =
+        voices.find(v => /child|junior|boy|young/i.test(v.name) && /male|boy|junior/i.test(v.name)) ||
+        voices.find(v => /david|mark|george|daniel|alex|aaron|guy|ravi|male/i.test(v.name)) ||
+        voices.find(v => v.lang === 'en-IN' && /male/i.test(v.name)) ||
+        voices.find(v => v.lang.startsWith('en') && /male/i.test(v.name)) ||
+        voices.find(v => v.lang.startsWith('en'));
+    if (boyVoice) utterance.voice = boyVoice;
+}
 
 export default function InteractiveAvatar() {
     const [stage, setStage] = useState<"hidden" | "entering" | "waiting" | "speaking" | "rejected">("hidden");
     const [isMuted, setIsMuted] = useState(false);
+    const [audioBlocked, setAudioBlocked] = useState(false);
     const [currentText, setCurrentText] = useState("");
+    const [currentVideoSrc, setCurrentVideoSrc] = useState("/avatar-welcome.mp4");
     const [customTourLink, setCustomTourLink] = useState<{ label: string, action: () => void } | null>(null);
+
     const location = useLocation();
     const navigate = useNavigate();
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const audioStartedRef = useRef(false);
+    const isMutedRef = useRef(false);
+    const speechPendingRef = useRef(false);
+    const speechRequestRef = useRef(0);
+    const activeConfigRef = useRef<AvatarConfig>(routeAvatarConfigs["/"]);
+    const spokenDialoguesRef = useRef(new Set<string>());
+    const activeHomeSectionRef = useRef<string | null>(null);
 
-    // Current page configuration
-    const activeConfig = routeAvatarConfigs[location.pathname] || routeAvatarConfigs["/"];
+    const startMotion = useCallback(() => {
+        const video = videoRef.current;
+        if (!video) return;
+        video.currentTime = 0;
+        video.play().catch(() => { });
+    }, []);
 
-    // Canvas Chroma Key Logic - 100% Pure Transparency & Zero Borders
+    const stopMotion = useCallback(() => {
+        const video = videoRef.current;
+        if (!video) return;
+        video.pause();
+        video.currentTime = 0;
+    }, []);
+    const stopSpeech = useCallback(() => {
+        speechRequestRef.current += 1;
+        speechPendingRef.current = false;
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+            audioRef.current = null;
+        }
+        window.speechSynthesis?.cancel();
+        stopMotion();
+    }, [stopMotion]);
+
+    const setActiveConfig = useCallback((config: AvatarConfig) => {
+        activeConfigRef.current = config;
+        setCurrentText(config.text);
+        setCurrentVideoSrc(config.videoSrc);
+        setCustomTourLink(config.tourLink ?? null);
+    }, []);
+
+    // Guaranteed Continuous 60FPS Pure Transparent Chroma-Key Canvas
     useEffect(() => {
         let animationFrameId: number;
-        const processFrame = () => {
-            if (canvasRef.current && videoRef.current) {
-                const ctx = canvasRef.current.getContext('2d', { willReadFrequently: true });
-                const video = videoRef.current;
+        let lastFrameTime = 0;
 
-                if (ctx && video.readyState >= 2) {
-                    const computeHeight = Math.min(video.videoHeight || 480, 480);
-                    const computeWidth = computeHeight * ((video.videoWidth || 640) / (video.videoHeight || 480));
+        const processFrame = (time: number) => {
+            if (time - lastFrameTime < 33) {
+                animationFrameId = requestAnimationFrame(processFrame);
+                return;
+            }
+            lastFrameTime = time;
+            const video = videoRef.current;
+            const canvas = canvasRef.current;
 
-                    if (canvasRef.current.width !== computeWidth) {
-                        canvasRef.current.width = computeWidth;
-                        canvasRef.current.height = computeHeight;
+            if (canvas && video && video.readyState >= 2) {
+                const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                if (ctx) {
+                    const computeHeight = 280;
+                    const aspect = (video.videoWidth || 640) / (video.videoHeight || 480);
+                    const computeWidth = Math.round(computeHeight * aspect);
+
+                    if (canvas.width !== computeWidth || canvas.height !== computeHeight) {
+                        canvas.width = computeWidth;
+                        canvas.height = computeHeight;
                     }
 
                     ctx.drawImage(video, 0, 0, computeWidth, computeHeight);
                     const frame = ctx.getImageData(0, 0, computeWidth, computeHeight);
                     const data = frame.data;
-                    const length = data.length;
+                    const len = data.length;
 
-                    let r, g, b, max, min, diff;
+                    // Fast chroma-key background removal
+                    for (let i = 0; i < len; i += 4) {
+                        const r = data[i];
+                        const g = data[i + 1];
+                        const b = data[i + 2];
 
-                    for (let i = 0; i < length; i += 4) {
-                        r = data[i];
-                        g = data[i + 1];
-                        b = data[i + 2];
-
-                        max = r > g ? (r > b ? r : b) : (g > b ? g : b);
-                        min = r < g ? (r < b ? r : b) : (g < b ? g : b);
-                        diff = max - min;
+                        const max = r > g ? (r > b ? r : b) : (g > b ? g : b);
+                        const min = r < g ? (r < b ? r : b) : (g < b ? g : b);
+                        const diff = max - min;
 
                         // 1. Studio light-grey background
-                        const isStudioGrey = diff < 18 && min > 165;
                         // 2. Studio floor shadow
-                        const isFloorShadow = diff < 14 && min > 110 && b > 105 && r < 175;
-                        // 3. Studio light-blue background (avatar-dance.mp4)
-                        const isStudioBlue = b > 170 && g > 150 && r > 130 && diff < 55;
+                        // 3. Studio light-blue background
                         // 4. Light-blue floor shadow
-                        const isBlueFloorShadow = b > 110 && g > 110 && diff < 20 && min > 90 && max < 160;
-
-                        if (isStudioGrey || isFloorShadow || isStudioBlue || isBlueFloorShadow) {
-                            data[i + 3] = 0; // Pure 100% transparency
+                        if (
+                            (diff < 18 && min > 165) ||
+                            (diff < 14 && min > 110 && b > 105 && r < 175) ||
+                            (b > 170 && g > 150 && r > 130 && diff < 55) ||
+                            (b > 110 && g > 110 && diff < 20 && min > 90 && max < 160)
+                        ) {
+                            data[i + 3] = 0;
                         }
                     }
                     ctx.putImageData(frame, 0, 0);
@@ -126,71 +153,130 @@ export default function InteractiveAvatar() {
             }
             animationFrameId = requestAnimationFrame(processFrame);
         };
-        processFrame();
+
+        animationFrameId = requestAnimationFrame(processFrame);
         return () => cancelAnimationFrame(animationFrameId);
     }, []);
 
-    // Video Source Synchronization per Page (Each page has its own standalone .mp4)
+    // Speech execution function
+    const playSpeech = useCallback((config: AvatarConfig) => {
+        if (isMutedRef.current) {
+            setStage("waiting");
+            return;
+        }
+
+        stopSpeech();
+        startMotion();
+        const requestId = speechRequestRef.current;
+        speechPendingRef.current = true;
+        const finish = () => {
+            if (speechRequestRef.current === requestId) {
+                speechPendingRef.current = false;
+                stopMotion();
+                setStage("waiting");
+            }
+        };
+
+        // Media autoplay is blocked by browsers; the homepage uses speech synthesis
+        // so its greeting can start as soon as the preloader finishes.
+        if (config.audioSrc && !config.preferSpeechSynthesis) {
+            const audio = new Audio(config.audioSrc);
+            audioRef.current = audio;
+            audio.onended = finish;
+            audio.onerror = () => {
+                audioRef.current = null;
+                finish();
+            };
+            audio.play().then(() => {
+                if (speechRequestRef.current !== requestId) return;
+                setStage("speaking");
+                setAudioBlocked(false);
+                audioStartedRef.current = true;
+                speechPendingRef.current = false;
+            }).catch(() => {
+                audioRef.current = null;
+                speechPendingRef.current = false;
+                setAudioBlocked(true);
+                setStage("waiting");
+                stopMotion();
+            });
+            return;
+        }
+        if (!window.speechSynthesis) {
+            speechPendingRef.current = false;
+            setStage("waiting");
+            setAudioBlocked(true);
+            return;
+        }
+
+        const utterance = new SpeechSynthesisUtterance(config.text);
+        utterance.onend = finish;
+        utterance.onerror = finish;
+
+        const speakNow = (voices: SpeechSynthesisVoice[]) => {
+            if (speechRequestRef.current !== requestId) return;
+            assignYoungBoyVoice(utterance, voices);
+            window.speechSynthesis.speak(utterance);
+            setStage("speaking");
+            setAudioBlocked(false);
+            audioStartedRef.current = true;
+            speechPendingRef.current = false;
+        };
+
+        const voices = window.speechSynthesis.getVoices();
+        if (voices.length > 0) {
+            speakNow(voices);
+        } else {
+            // Voices load asynchronously; wait for them.
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.onvoiceschanged = null;
+                speakNow(window.speechSynthesis.getVoices());
+            };
+        }
+    }, [startMotion, stopMotion, stopSpeech]);
+    const playConfigAutomatically = useCallback((config: AvatarConfig) => {
+        const dialogueKey = `${config.videoSrc}|${config.text}`;
+        if (spokenDialoguesRef.current.has(dialogueKey)) return;
+        spokenDialoguesRef.current.add(dialogueKey);
+        playSpeech(config);
+    }, [playSpeech]);
+    // Smooth Video Playback & Source Synchronization
     useEffect(() => {
         const video = videoRef.current;
         if (!video) return;
 
-        // Skip if on suppressed pages
         if (location.pathname === "/qr-scan" || location.pathname === "/qr" || location.pathname === "/terms") {
             return;
         }
 
-        const config = routeAvatarConfigs[location.pathname] || routeAvatarConfigs["/"];
-
-        // Switch to the dedicated standalone video for the current route
-        if (!video.src.endsWith(config.videoSrc)) {
-            video.src = config.videoSrc;
-            video.load();
-            video.play().catch(() => { });
+        if (!video.src.endsWith(currentVideoSrc)) {
+            video.src = currentVideoSrc;
         }
-    }, [location.pathname]);
+        video.play().catch(() => { });
+    }, [currentVideoSrc, location.pathname]);
 
-    // Route Awareness and Kid Voice Audio Playback
+    // Route Awareness and Initiation
     useEffect(() => {
-        // Completely hide and silence avatar on /qr-scan and /terms (explicitly requested by user)
+        // Completely hide avatar on /qr-scan, /qr, and /terms
         if (location.pathname === "/qr-scan" || location.pathname === "/qr" || location.pathname === "/terms") {
-            if (audioRef.current) { audioRef.current.pause(); audioRef.current.currentTime = 0; }
+            stopSpeech();
             setStage("hidden");
             return;
         }
 
         const config = routeAvatarConfigs[location.pathname] || routeAvatarConfigs["/"];
-        setCurrentText(config.text);
-        setCustomTourLink(null);
+        setActiveConfig(config);
+        audioStartedRef.current = false;
+        spokenDialoguesRef.current.clear();
+        stopSpeech();
 
-        if (audioRef.current) {
-            audioRef.current.pause();
-            audioRef.current.currentTime = 0;
-        }
-
-        // ONLY wait for preloaderFinished if currently on the Home page ("/") and it hasn't finished yet
         const isFirstLoadOnHome = location.pathname === "/" && !sessionStorage.getItem('avatarVoiceInitialized');
         let enterTimer: ReturnType<typeof setTimeout>;
 
         const executeAvatarSpeech = () => {
+            if (audioStartedRef.current || speechPendingRef.current) return;
             sessionStorage.setItem('avatarVoiceInitialized', 'true');
-
-            if (!isMuted) {
-                const audio = new Audio(config.audioSrc);
-                audioRef.current = audio;
-
-                audio.onended = () => setStage("waiting");
-                audio.onerror = () => setStage("waiting");
-
-                audio.play().then(() => {
-                    setStage("speaking");
-                }).catch(() => {
-                    // Browser policy blocked unmuted autoplay
-                    setStage("waiting");
-                });
-            } else {
-                setStage("waiting");
-            }
+            playConfigAutomatically(activeConfigRef.current);
         };
 
         const handlePreloaderComplete = () => {
@@ -203,6 +289,7 @@ export default function InteractiveAvatar() {
             window.addEventListener('preloaderFinished', handlePreloaderComplete);
         } else {
             setStage("entering");
+            // Auto-speak on ALL routes including home re-entry
             enterTimer = setTimeout(executeAvatarSpeech, 300);
         }
 
@@ -211,84 +298,129 @@ export default function InteractiveAvatar() {
                 window.removeEventListener('preloaderFinished', handlePreloaderComplete);
             }
             clearTimeout(enterTimer);
-            if (audioRef.current) { audioRef.current.pause(); audioRef.current.currentTime = 0; }
+            stopSpeech();
         };
-    }, [location.pathname]);
+    }, [location.pathname, playConfigAutomatically, playSpeech, setActiveConfig, stopSpeech]);
 
-    // Scroll-based prompt updates for homepage
+    // Global First-Interaction Audio Trigger
+    useEffect(() => {
+        if (location.pathname === "/qr-scan" || location.pathname === "/qr" || location.pathname === "/terms") return;
+
+        const unlockAndPlay = () => {
+            if (!audioStartedRef.current && !speechPendingRef.current && !isMuted && stage !== "hidden") {
+                playSpeech(activeConfigRef.current);
+            }
+        };
+
+        const events = ["click", "touchstart", "pointerdown", "scroll", "keydown"];
+        const handleUserGesture = () => {
+            unlockAndPlay();
+            events.forEach(evt => window.removeEventListener(evt, handleUserGesture));
+        };
+
+        events.forEach(evt => window.addEventListener(evt, handleUserGesture, { passive: true }));
+        return () => {
+            events.forEach(evt => window.removeEventListener(evt, handleUserGesture));
+        };
+    }, [location.pathname, isMuted, stage, playSpeech]);
+
+    // Section-Aware Scroll: IntersectionObserver watches each data-section element on home page
     useEffect(() => {
         if (location.pathname !== "/") return;
 
-        const homeScrollSections = [
-            {
-                maxScroll: 450,
-                text: "Welcome to A.R. Grand! ✨ Explore our luxury wedding halls.",
-                tourLink: { label: "Explore Gallery 🖼️", action: () => navigate('/gallery') }
-            },
-            {
-                maxScroll: 1100,
-                text: "10+ years of timeless elegance & 500+ memorable celebrations 🏛️",
-                tourLink: { label: "View Facilities 🏨", action: () => navigate('/facilities') }
-            },
-            {
-                maxScroll: 1850,
-                text: "AC halls, premium catering & seating up to 250 guests ✨",
-                tourLink: { label: "Check Events 📅", action: () => navigate('/events') }
-            },
-            {
-                maxScroll: 2550,
-                text: "Take a cinematic 360° virtual tour inside A.R Grand 🎥",
-                tourLink: { label: "Book Your Venue 💍", action: () => navigate('/enquiry') }
-            },
-            {
-                maxScroll: Infinity,
-                text: "Loved by couples across Chennai. Ready to plan your big day? 💖",
-                tourLink: { label: "Enquire Now 💌", action: () => navigate('/enquiry') }
-            }
-        ];
-
-        const handleScroll = () => {
-            const scrollY = window.scrollY;
-            const matched = homeScrollSections.find(s => scrollY < s.maxScroll) || homeScrollSections[0];
-            setCurrentText(matched.text);
-            setCustomTourLink(matched.tourLink);
+        type SectionConfig = AvatarConfig & {
+            sectionId: string;
+            tourLink: { label: string; action: () => void };
         };
 
-        window.addEventListener("scroll", handleScroll, { passive: true });
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, [location.pathname, navigate]);
+        const homeSections: Record<string, SectionConfig> = {
+            hero: { sectionId: "hero", text: "Welcome to A.R. Grand. Explore our luxury wedding and banquet halls.", videoSrc: "/avatar-welcome.mp4", audioSrc: "/audio/home.mp3", tourLink: { label: "Explore Gallery", action: () => navigate('/gallery') } },
+            about: { sectionId: "about", text: "Located in Kodungaiyur, Chennai, with timeless elegance and modern amenities.", videoSrc: "/avatar-turn-front.mp4", audioSrc: "/audio/home-about.mp3", tourLink: { label: "View Gallery", action: () => navigate('/gallery') } },
+            stats: { sectionId: "stats", text: "More than 10 years of trust, over 500 celebrations, and space for up to 250 guests.", videoSrc: "/avatar-side-walk.mp4", audioSrc: "/audio/home-stats.mp3", tourLink: { label: "View Facilities", action: () => navigate('/facilities') } },
+            features: { sectionId: "features", text: "Air-conditioned halls, premium catering, DJ, decor, a bridal room, and parking in one place.", videoSrc: "/avatar-approach.mp4", audioSrc: "/audio/home-features.mp3", tourLink: { label: "Check Events", action: () => navigate('/events') } },
+            tour: { sectionId: "tour", text: "Take a cinematic 360-degree virtual tour inside A.R. Grand.", videoSrc: "/avatar-approach.mp4", audioSrc: "/audio/home-tour.mp3", tourLink: { label: "Book Your Venue", action: () => navigate('/enquiry') } },
+            testimonials: { sectionId: "testimonials", text: "Loved by couples across Chennai, with five-star reviews from real celebrations.", videoSrc: "/avatar-approach-and-greet.mp4", audioSrc: "/audio/home-testimonials.mp3", tourLink: { label: "Enquire Now", action: () => navigate('/enquiry') } },
+            cta: { sectionId: "cta", text: "Ready to book your dream venue? Reserve your date today.", videoSrc: "/avatar-approach-and-greet.mp4", audioSrc: "/audio/home-cta.mp3", tourLink: { label: "Enquire Now", action: () => navigate('/enquiry') } }
+        };
+
+        const visibilityMap: Record<string, number> = {};
+        let updateTimer: ReturnType<typeof setTimeout>;
+
+        const updateActiveSection = () => {
+            const nextSection = Object.entries(visibilityMap)
+                .filter(([, ratio]) => ratio > 0)
+                .sort(([, firstRatio], [, secondRatio]) => secondRatio - firstRatio)[0]?.[0];
+            if (!nextSection || nextSection === activeHomeSectionRef.current) return;
+
+            const config = homeSections[nextSection];
+            if (!config) return;
+            activeHomeSectionRef.current = nextSection;
+            stopSpeech();
+            setActiveConfig(config);
+            if (stage !== "hidden") {
+                updateTimer = setTimeout(() => playConfigAutomatically(config), 180);
+            }
+        };
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    const key = (entry.target as HTMLElement).dataset.section;
+                    if (key) visibilityMap[key] = entry.isIntersecting ? entry.intersectionRatio : 0;
+                });
+                clearTimeout(updateTimer);
+                updateTimer = setTimeout(updateActiveSection, 100);
+            },
+            { threshold: [0, 0.15, 0.4, 0.7], rootMargin: "-20% 0px -30% 0px" }
+        );
+
+        document.querySelectorAll("[data-section]").forEach((element) => observer.observe(element));
+
+        return () => {
+            clearTimeout(updateTimer);
+            observer.disconnect();
+            activeHomeSectionRef.current = null;
+        };
+    }, [location.pathname, navigate, playConfigAutomatically, setActiveConfig, stage, stopSpeech]);
 
     const handleDismiss = () => {
-        if (audioRef.current) { audioRef.current.pause(); audioRef.current.currentTime = 0; }
+        stopSpeech();
         setStage("rejected");
     };
 
     const toggleMute = () => {
         if (!isMuted) {
-            if (audioRef.current) { audioRef.current.pause(); audioRef.current.currentTime = 0; }
+            isMutedRef.current = true;
+            stopSpeech();
             setStage("waiting");
+            setIsMuted(true);
         } else {
-            const config = routeAvatarConfigs[location.pathname] || routeAvatarConfigs["/"];
-            const audio = new Audio(config.audioSrc);
-            audioRef.current = audio;
-            audio.onended = () => setStage("waiting");
-            audio.onerror = () => setStage("waiting");
-            audio.play().then(() => setStage("speaking")).catch(() => setStage("waiting"));
+            isMutedRef.current = false;
+            setIsMuted(false);
+            playSpeech(activeConfigRef.current);
         }
-        setIsMuted(!isMuted);
     };
 
-    // Notice: /events deliberately has NO Google Maps button (removed per user request)
+    const handleAvatarClick = () => {
+        const video = videoRef.current;
+        if (video) {
+            video.currentTime = 0;
+            video.play().catch(() => { });
+        }
+        playSpeech(activeConfigRef.current);
+    };
+
+    // Predefined tour links per tab
     const defaultTourLinks: Record<string, { label: string, action: () => void }> = {
-        "/": { label: "Explore Gallery 🖼️", action: () => navigate('/gallery') },
-        "/gallery": { label: "View Facilities 🏨", action: () => navigate('/facilities') },
-        "/facilities": { label: "Discover Events 🎉", action: () => navigate('/events') },
-        "/contact": { label: "Book Your Venue 💍", action: () => navigate('/enquiry') }
+        "/": { label: "Explore Gallery", action: () => navigate('/gallery') },
+        "/gallery": { label: "View Facilities", action: () => navigate('/facilities') },
+        "/facilities": { label: "Discover Events", action: () => navigate('/events') },
+        "/contact": { label: "Book Your Venue", action: () => navigate('/enquiry') }
     };
 
     const activeTourLink = customTourLink || defaultTourLinks[location.pathname];
 
-    // Completely suppress avatar on hidden routes or /terms
+    // Suppress avatar on /qr-scan, /qr, /terms
     if (stage === "hidden" || location.pathname === "/qr-scan" || location.pathname === "/qr" || location.pathname === "/terms") return null;
 
     let transformString = "translateX(-150vw)";
@@ -320,7 +452,8 @@ export default function InteractiveAvatar() {
                 {/* Character Container: Zero Glow, Zero Border, Pure Natural Display */}
                 <div
                     className="w-40 h-56 md:w-56 md:h-72 flex flex-col items-center justify-center cursor-pointer group pointer-events-auto overflow-visible relative"
-                    onClick={toggleMute}
+                    onClick={handleAvatarClick}
+                    title="Click the boy to speak"
                     style={{
                         transform: avatarTransform,
                         transition: `transform ${avatarFlipDuration} cubic-bezier(0.25, 0.46, 0.45, 0.94)`
@@ -330,34 +463,30 @@ export default function InteractiveAvatar() {
                         {isMuted ? <VolumeX className="text-white drop-shadow-md" size={24} /> : <Volume2 className="text-white drop-shadow-md" size={24} />}
                     </div>
 
-                    {stage === 'rejected' && (
-                        <div className="absolute -top-12 left-1/2 -translate-x-[40%] md:-translate-x-[30%] flex flex-col items-center z-10 transition-opacity">
-                            <span className="text-6xl drop-shadow-md mb-2">🌧️</span>
-                            <span className="text-3xl absolute top-12 left-10 animate-[bounce_1.5s_infinite]">💧</span>
-                        </div>
-                    )}
-
-                    {/* Canvas with 100% Pure Transparent Pixel Shader - NO BOX, NO BORDER, NO GLOW */}
+                    {/* Canvas with 100% Pure Transparent Pixel Shader */}
                     <canvas
                         ref={canvasRef}
                         className="w-[180%] h-[180%] max-w-none object-cover object-[center_30%] relative z-10 bg-transparent border-0 outline-none shadow-none"
                     />
 
-                    {/* Video Element for Motion Playback */}
+                    {/* Motion Video Element with continuous loop */}
                     <video
                         ref={videoRef}
-                        src={activeConfig.videoSrc}
+                        src={currentVideoSrc}
                         autoPlay
                         muted
                         loop
                         playsInline
+                        onCanPlay={() => {
+                            videoRef.current?.play().catch(() => { });
+                        }}
                         className="opacity-0 w-0 h-0 absolute pointer-events-none"
                     />
                 </div>
 
                 {/* Compact, Sleek Speech Bubble */}
                 <div
-                    className={`absolute bottom-[85%] left-[20%] md:bottom-[60%] md:left-[75%] w-[14.5rem] md:w-[17.5rem] bg-card/95 backdrop-blur-md p-3 md:p-3.5 rounded-2xl rounded-bl-sm shadow-[var(--shadow-elegant)] border border-[hsl(var(--gold)/0.3)] transition-all duration-500 origin-bottom-left flex flex-col gap-2.5 ${(stage === "speaking" || stage === "waiting") ? "scale-100 opacity-100" : "scale-0 opacity-0"
+                    className={`absolute bottom-[85%] left-[20%] md:bottom-[60%] md:left-[75%] w-[15rem] md:w-[18rem] bg-card/95 backdrop-blur-md p-3 md:p-3.5 rounded-2xl rounded-bl-sm shadow-[var(--shadow-elegant)] border border-[hsl(var(--gold)/0.3)] transition-all duration-500 origin-bottom-left flex flex-col gap-2.5 ${(stage === "speaking" || stage === "waiting") ? "scale-100 opacity-100" : "scale-0 opacity-0"
                         }`}
                 >
                     {/* Header with prompt text & clean control buttons */}
@@ -367,7 +496,7 @@ export default function InteractiveAvatar() {
                         </p>
                         <div className="flex items-center gap-1 shrink-0">
                             <button
-                                onClick={toggleMute}
+                                onClick={(e) => { e.stopPropagation(); toggleMute(); }}
                                 className="text-muted-foreground hover:text-foreground p-1 rounded-full hover:bg-muted transition-colors"
                                 title={isMuted ? "Unmute voice" : "Mute voice"}
                                 aria-label={isMuted ? "Unmute voice" : "Mute voice"}
@@ -375,7 +504,7 @@ export default function InteractiveAvatar() {
                                 {isMuted ? <VolumeX size={13} /> : <Volume2 size={13} />}
                             </button>
                             <button
-                                onClick={handleDismiss}
+                                onClick={(e) => { e.stopPropagation(); handleDismiss(); }}
                                 className="text-muted-foreground hover:text-foreground p-1 rounded-full hover:bg-muted transition-colors"
                                 title="Close"
                                 aria-label="Dismiss concierge"
@@ -384,6 +513,18 @@ export default function InteractiveAvatar() {
                             </button>
                         </div>
                     </div>
+
+                    {/* Autoplay blocked indicator button - Tap to Listen */}
+                    {audioBlocked && !isMuted && (
+                        <button
+                            onClick={handleAvatarClick}
+                            className="w-full flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-lg bg-[hsl(var(--gold)/0.15)] text-[hsl(var(--gold))] border border-[hsl(var(--gold)/0.4)] text-[11px] font-medium hover:bg-[hsl(var(--gold)/0.25)] transition-all animate-pulse cursor-pointer"
+                        >
+                            <Volume2 size={13} />
+                            <span>Tap to listen to guide</span>
+                            <Sparkles size={11} />
+                        </button>
+                    )}
 
                     {/* Action Link Button (Only if defined for current page/scroll) */}
                     {activeTourLink && (
